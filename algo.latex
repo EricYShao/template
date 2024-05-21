@@ -377,9 +377,9 @@ $if(logo)$
 $endif$
 $endif$
 
-\title{\vspace{50mm} \huge Fortcoders Code Library \\[20pt]}
-\author{askd, yangster67, Nea1 \\[10pt]}
-\date{April 5th 2024}
+\title{\vspace{50mm} \huge CU-Later Code Library \\[20pt]}
+\author{yangster67, ikaurov, serichaoo \\[10pt]}
+\date{May 21th 2024}
 
 
 \begin{document}
