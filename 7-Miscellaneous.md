@@ -26,3 +26,12 @@ cerr << (tac - tic) / CLOCKS_PER_SEC * 1000 << endl;
 cout << setprecision(d) << fixed;
 // Each number is rounded to d digits after the decimal point, and truncated.
 ```
+
+## Common Bugs and General Advice
+
++ Check overflow, array bounds
++ Check variable overloading
++ Check special cases (n=1?)
++ Do something instead of nothing, stay organized
++ Write stuff down!
++ Don't get stuck on one approach!
