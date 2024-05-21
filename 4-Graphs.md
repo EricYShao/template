@@ -65,7 +65,7 @@ while (!q.empty()){
 }
 ```
 
-## EULERIAN CYCLE DFS
+## Eulerian Cycle DFS
 
 ```cpp
 void dfs(int v){
@@ -78,47 +78,70 @@ void dfs(int v){
 }
 ```
 
-## Strongly Connected Components: Kosaraju’s Algorithm
+## SCC and 2-SAT
 
 ```cpp
-vector<vector<int>> adj, adj_rev;
-vector<bool> used;
-vector<int> order, component;
-
-void dfs1(int v) {
-    used[v] = true;
-
-    for (auto u : adj[v])
-        if (!used[u])
-            dfs1(u);
-
-    order.push_back(v);
+void scc(vector<vector<int>>& g, int* idx) {
+  int n = g.size(), ct = 0;
+  int out[n];
+  vector<int> ginv[n];
+  memset(out, -1, sizeof out);
+  memset(idx, -1, n * sizeof(int));
+  function<void(int)> dfs = [&](int cur) {
+    out[cur] = INT_MAX;
+    for(int v : g[cur]) {
+      ginv[v].push_back(cur);
+      if(out[v] == -1) dfs(v);
+    }
+    ct++; out[cur] = ct;
+  };
+  vector<int> order;
+  for(int i = 0; i < n; i++) {
+    order.push_back(i);
+    if(out[i] == -1) dfs(i);
+  }
+  sort(order.begin(), order.end(), [&](int& u, int& v) {
+    return out[u] > out[v];
+  });
+  ct = 0;
+  stack<int> s;
+  auto dfs2 = [&](int start) {
+    s.push(start);
+    while(!s.empty()) {
+      int cur = s.top();
+      s.pop();
+      idx[cur] = ct;
+      for(int v : ginv[cur])
+        if(idx[v] == -1) s.push(v);
+    }
+  };
+  for(int v : order) {
+    if(idx[v] == -1) {
+      dfs2(v);
+      ct++;
+    }
+  }
 }
 
-void dfs2(int v) {
-    used[v] = true;
-    component.push_back(v);
-
-    for (auto u : adj_rev[v])
-        if (!used[u])
-            dfs2(u);
-}
-
-int main(){
-// ......
-    used.assign(n, false);
-
-    for (int i = 0; i < n; i++)
-        if (!used[i])
-            dfs1(i);
-    used.assign(n, false);
-    reverse(order.begin(), order.end());
-    for (auto v : order)
-        if (!used[v]) {
-            dfs2(v);
-            // process
-            component.clear();
-        }
+// 0 => impossible, 1 => possible
+pair<int,vector<int>> sat2(int n, vector<pair<int,int>>& clauses) {
+  vector<int> ans(n);
+  vector<vector<int>> g(2*n + 1);
+  for(auto [x, y] : clauses) {
+    x = x < 0 ? -x + n : x;
+    y = y < 0 ? -y + n : y;
+    int nx = x <= n ? x + n : x - n;
+    int ny = y <= n ? y + n : y - n;
+    g[nx].push_back(y);
+    g[ny].push_back(x);
+  }
+  int idx[2*n + 1];
+  scc(g, idx);
+  for(int i = 1; i <= n; i++) {
+    if(idx[i] == idx[i + n]) return {0, {}};
+    ans[i - 1] = idx[i + n] < idx[i];
+  }
+  return {1, ans};
 }
 ```
 
@@ -176,7 +199,7 @@ for (int i = 1; i < sz(order); i++){
 }
 ```
 
-## HLD ON EDGES DFS
+## HLD on Edges DFS
 
 ```cpp
 void dfs1(int v, int p, int d){
