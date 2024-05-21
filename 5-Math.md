@@ -30,22 +30,54 @@ int gcd(int a, int b, int& x, int& y) {
 
 ## Linear Sieve
 
++ Mobius Function
+
+```cpp
+vector<int> prime;
+bool is_composite[MAX_N];
+int mu[MAX_N];
+
+void sieve(int n){
+  fill(is_composite, is_composite + n, 0);
+  mu[1] = 1;
+  for (int i = 2; i < n; i++){
+    if (!is_composite[i]){
+      prime.push_back(i);
+      mu[i] = -1; //i is prime
+      }
+  for (int j = 0; j < prime.size() && i * prime[j] < n; j++){
+    is_composite[i * prime[j]] = true;
+    if (i % prime[j] == 0){
+      mu[i * prime[j]] = 0; //prime[j] divides i
+      break;
+      } else {
+      mu[i * prime[j]] = -mu[i]; //prime[j] does not divide i
+      }
+    }
+  }
+}
+```
+
+
+
++ Euler's Totient Function
+
 ```cpp
 vector<int> prime;
 bool is_composite[MAX_N];
 int phi[MAX_N];
 
-void sieve (int n){
-  fill(is_composite, is_composite + n, false);
+void sieve(int n){
+  fill(is_composite, is_composite + n, 0);
   phi[1] = 1;
-  for (int i = 2; i < n; ++i) {
-    if (!is_composite[i]) {
+  for (int i = 2; i < n; i++){
+    if (!is_composite[i]){
       prime.push_back (i);
       phi[i] = i - 1; //i is prime
       }
-  for (int j = 0; j < prime.size () && i * prime[j] < n; ++j) {
+  for (int j = 0; j < prime.size () && i * prime[j] < n; j++){
     is_composite[i * prime[j]] = true;
-    if (i % prime[j] == 0) {
+    if (i % prime[j] == 0){
       phi[i * prime[j]] = phi[i] * prime[j]; //prime[j] divides i
       break;
       } else {
