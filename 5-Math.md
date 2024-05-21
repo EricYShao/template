@@ -212,6 +212,8 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
 + (Miller–Rabin primality test)
 
 ```cpp
+typedef __int128_t i128;
+
 i128 power(i128 a, i128 b, i128 MOD = 1, i128 res = 1) {
   for (; b; b /= 2, (a *= a) %= MOD)
     if (b & 1) (res *= a) %= MOD;
@@ -242,6 +244,8 @@ bool is_prime(ll n) {
 ```
 
 ```cpp
+typedef __int128_t i128;
+
 ll pollard_rho(ll x) {
   ll s = 0, t = 0, c = rng() % (x - 1) + 1;
   ll stp = 0, goal = 1, val = 1;
