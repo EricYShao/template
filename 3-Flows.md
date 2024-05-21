@@ -1,5 +1,5 @@
 # Flows
-## O(N^2 * M), on unit networks O(N^(1/2) * M)
+## $O(N^2 M)$, on unit networks $O(N^{1/2} M)$
 
 ```cpp
 struct FlowEdge {
@@ -79,7 +79,7 @@ struct Dinic {
 };
 // To recover flow through original edges: iterate over even indices in edges.
 ```
-## MCMF – maximize flow, then minimize its cost. O(F*m*n).
+## MCMF – maximize flow, then minimize its cost. $O(Fmn)$.
 
 ```cpp
 #include <ext/pb_ds/priority_queue.hpp>
