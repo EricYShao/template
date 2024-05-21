@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-python@v3
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using semver version range syntax.
@@ -43,9 +43,7 @@ jobs:
         sh pandoc/gen.sh
         mkdir /tmp/template
         mv template.pdf /tmp/template/
-    - uses: actions/checkout@v3
-      with:
-        ref: gh-pages
+    - uses: actions/checkout@v4
     - name: Deploy
       run: |
         cp /tmp/template/template.pdf .
