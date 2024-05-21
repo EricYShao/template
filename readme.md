@@ -1,5 +1,5 @@
 ## template
 
-![](https://github.com/askdfjlas/template/workflows/build/badge.svg)
+![](https://github.com/serichaoo/template/workflows/build/badge.svg)
 
-[PDF](https://github.com/askdfjlas/template/blob/gh-pages/template.pdf)
+[PDF](https://github.com/serichaoo/template/blob/master/template.pdf)
