@@ -50,7 +50,7 @@ jobs:
       run: |
         cp /tmp/template/template.pdf .
         git add template.pdf
-        git config --global user.email "bot@fortcoder.io"
-        git config --global user.name "fortcoder BOT"
+        git config --global user.email "bot@serichaoo.io"
+        git config --global user.name "serichaoo BOT"
         git commit -m "Auto-generated PDF commit"
         git push
