@@ -1,4 +1,128 @@
 # Data Structures
+## Fenwick Tree
+```cpp
+ll sum(int r) {
+    ll ret = 0;
+    for (; r >= 0; r = (r & r + 1) - 1) ret += bit[r];
+    return ret;
+}
+void add(int idx, ll delta) {
+    for (; idx < n; idx |= idx + 1) bit[idx] += delta;
+}
+```
+## Lazy Propagation SegTree
+```cpp
+// Clear: clear() or build()
+const int N = 2e5 + 10; // Change the constant!
+template<typename T>
+struct LazySegTree{
+  T t[4 * N];
+  T lazy[4 * N];
+  int n;
+
+  // Change these functions, default return, and lazy mark.
+  T default_return = 0, lazy_mark = numeric_limits<T>::min();
+  // Lazy mark is how the algorithm will identify that no propagation is needed.
+  function<T(T, T)> f = [&] (T a, T b){
+    return a + b;
+  };
+  // f_on_seg calculates the function f, knowing the lazy value on segment,
+  // segment's size and the previous value.
+  // The default is segment modification for RSQ. For increments change to:
+  //     return cur_seg_val + seg_size * lazy_val;
+  // For RMQ.   Modification: return lazy_val;   Increments: return cur_seg_val + lazy_val;
+  function<T(T, int, T)> f_on_seg = [&] (T cur_seg_val, int seg_size, T lazy_val){
+    return seg_size * lazy_val;
+  };
+  // upd_lazy updates the value to be propagated to child segments.
+  // Default: modification. For increments change to:
+  //     lazy[v] = (lazy[v] == lazy_mark? val : lazy[v] + val);
+  function<void(int, T)> upd_lazy = [&] (int v, T val){
+    lazy[v] = val;
+  };
+  // Tip: for "get element on single index" queries, use max() on segment: no overflows.
+
+  LazySegTree(int n_) : n(n_) {
+    clear(n);
+  }
+
+  void build(int v, int tl, int tr, vector<T>& a){
+    if (tl == tr) {
+      t[v] = a[tl];
+      return;
+    }
+    int tm = (tl + tr) / 2;
+    // left child: [tl, tm]
+    // right child: [tm + 1, tr]
+    build(2 * v + 1, tl, tm, a);
+    build(2 * v + 2, tm + 1, tr, a);
+    t[v] = f(t[2 * v + 1], t[2 * v + 2]);
+  }
+
+  LazySegTree(vector<T>& a){
+    build(a);
+  }
+
+  void push(int v, int tl, int tr){
+    if (lazy[v] == lazy_mark) return;
+    int tm = (tl + tr) / 2;
+    t[2 * v + 1] = f_on_seg(t[2 * v + 1], tm - tl + 1, lazy[v]);
+    t[2 * v + 2] = f_on_seg(t[2 * v + 2], tr - tm, lazy[v]);
+    upd_lazy(2 * v + 1, lazy[v]), upd_lazy(2 * v + 2, lazy[v]);
+    lazy[v] = lazy_mark;
+  }
+  
+  void modify(int v, int tl, int tr, int l, int r, T val){
+    if (l > r) return;
+    if (tl == l && tr == r){
+      t[v] = f_on_seg(t[v], tr - tl + 1, val);
+      upd_lazy(v, val);
+      return;
+    }
+    push(v, tl, tr);
+    int tm = (tl + tr) / 2;
+    modify(2 * v + 1, tl, tm, l, min(r, tm), val);
+    modify(2 * v + 2, tm + 1, tr, max(l, tm + 1), r, val);
+    t[v] = f(t[2 * v + 1], t[2 * v + 2]);
+  }
+  
+  T query(int v, int tl, int tr, int l, int r) {
+    if (l > r) return default_return;
+    if (tl == l && tr == r) return t[v];
+    push(v, tl, tr);
+    int tm = (tl + tr) / 2;
+    return f(
+      query(2 * v + 1, tl, tm, l, min(r, tm)),
+      query(2 * v + 2, tm + 1, tr, max(l, tm + 1), r)
+    );
+  }
+  
+  void modify(int l, int r, T val){
+    modify(0, 0, n - 1, l, r, val);
+  }
+
+  T query(int l, int r){
+    return query(0, 0, n - 1, l, r);
+  }
+  
+  T get(int pos){
+    return query(pos, pos);
+  }
+  
+  // Change clear() function to t.clear() if using unordered_map for SegTree!!!
+  void clear(int n_){
+    n = n_;
+    for (int i = 0; i < 4 * n; i++) t[i] = 0, lazy[i] = lazy_mark;
+  }
+
+  void build(vector<T>& a){
+    n = sz(a);
+    clear(n);
+    build(0, 0, n - 1, a);
+  }
+};
+```
+
 ## Sparse Table
 
 ```cpp
