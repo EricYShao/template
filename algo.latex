@@ -385,6 +385,8 @@ $endif$
 \fancyhead[L]{Columbia University: CU Later}
 }
 
+\pagestyle{plain}
+
 \title{\vspace{50mm} \huge Columbia University: CU Later Team Reference Document \\[20pt]}
 \author{Kevin Yang, Innokentiy Kaurov, Eric Yuang Shao \\[10pt]}
 \date{May 21th 2024}
