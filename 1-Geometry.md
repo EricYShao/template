@@ -1,5 +1,6 @@
 # Geometry
 
++ Basic stuff
 ```cpp
 template<typename T>
 struct TPoint{
@@ -74,6 +75,9 @@ bool equivalent(const TLine<T>& l1, const TLine<T>& l2){
   abs(det(l1.b, l1.c, l2.b, l2.c)) <= TPoint<T>::eps &&
   abs(det(l1.a, l1.c, l2.a, l2.c)) <= TPoint<T>::eps;
 }
+```
++ Intersection
+```cpp
 template<typename T>
 TPoint<T> intersection(const TLine<T>& l1, const TLine<T>& l2){
   return TPoint<T>(
@@ -86,6 +90,9 @@ int sign(const T& x){
   if (abs(x) <= TPoint<T>::eps) return 0;
   return x > 0? +1 : -1;
 }
+```
++ Area
+```cpp
 template<typename T>
 T area(const vector<TPoint<T>>& pts){
   int n = sz(pts);
@@ -104,6 +111,9 @@ TLine<T> perp_line(const TLine<T>& l, const TPoint<T>& p){
   T na = -l.b, nb = l.a, nc = - na * p.x - nb * p.y;
   return TLine<T>(na, nb, nc);
 }
+```
++ Projection
+```cpp
 template<typename T>
 TPoint<T> projection(const TPoint<T>& p, const TLine<T>& l){
   return intersection(l, perp_line(l, p));
@@ -148,16 +158,25 @@ T dist_ps(const TPoint<T>& P, const TPoint<T>& A, const TPoint<T>& B){
   if (is_on_seg(H, A, B)) return dist_pp(P, H);
   else return min(dist_pp(P, A), dist_pp(P, B));
 }
+```
++ acw
+```cpp
 template<typename T>
 bool acw(const TPoint<T>& A, const TPoint<T>& B){
   T mul = vmul(A, B);
   return mul > 0 || abs(mul) <= TPoint<T>::eps;
 }
+```
++ cw
+```cpp
 template<typename T>
 bool cw(const TPoint<T>& A, const TPoint<T>& B){
   T mul = vmul(A, B);
   return mul < 0 || abs(mul) <= TPoint<T>::eps;
 }
+```
++ Convex Hull
+```cpp
 template<typename T>
 vector<TPoint<T>> convex_hull(vector<TPoint<T>> pts){
   sort(all(pts));
@@ -171,17 +190,25 @@ vector<TPoint<T>> convex_hull(vector<TPoint<T>> pts){
   for (int i = sz(up) - 2; i >= 1; i--) down.pb(up[i]);
   return down;
 }
-
+```
++ in_triangle
+```cpp
 template<typename T>
 bool in_triangle(TPoint<T>& P, TPoint<T>& A, TPoint<T>& B, TPoint<T>& C){
   if (is_on_seg(P, A, B) || is_on_seg(P, B, C) || is_on_seg(P, C, A)) return true;
   return cw(P - A, B - A) == cw(P - B, C - B) && 
   cw(P - A, B - A) == cw(P - C, A - C);
 }
+```
++ prep_convex_poly
+```cpp
 template<typename T>
 void prep_convex_poly(vector<TPoint<T>>& pts){
   rotate(pts.begin(), min_element(all(pts)), pts.end());
 }
+```
++ in_convex_poly:
+```cpp
 // 0 - Outside, 1 - Exclusively Inside, 2 - On the Border
 template<typename T>
 int in_convex_poly(TPoint<T>& p, vector<TPoint<T>>& pts){
@@ -201,6 +228,9 @@ int in_convex_poly(TPoint<T>& p, vector<TPoint<T>>& pts){
   ) return 2;
   return 1;
 }
+```
++ in_simple_poly
+```cpp
 // 0 - Outside, 1 - Exclusively Inside, 2 - On the Border
 template<typename T>
 int in_simple_poly(TPoint<T> p, vector<TPoint<T>>& pts){
@@ -215,6 +245,9 @@ int in_simple_poly(TPoint<T> p, vector<TPoint<T>>& pts){
   }
   return res;
 }
+```
++ minkowski_rotate
+```cpp
 template<typename T>
 void minkowski_rotate(vector<TPoint<T>>& P){
   int pos = 0;
@@ -226,6 +259,9 @@ void minkowski_rotate(vector<TPoint<T>>& P){
   }
   rotate(P.begin(), P.begin() + pos, P.end());
 }
+```
++ minkowski_sum
+```cpp
 // P and Q are strictly convex, points given in counterclockwise order
 template<typename T>
 vector<TPoint<T>> minkowski_sum(vector<TPoint<T>> P, vector<TPoint<T>> Q){
