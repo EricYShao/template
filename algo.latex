@@ -307,7 +307,7 @@ $header-includes$
 $endfor$
 
 $if(pagestyle)$
-\pagestyle{$pagestyle$}
+% \pagestyle{$pagestyle$}
 $endif$
 
 $if(lang)$
