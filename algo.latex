@@ -377,8 +377,16 @@ $if(logo)$
 $endif$
 $endif$
 
-\title{\vspace{50mm} \huge CU-Later Code Library \\[20pt]}
-\author{yangster67, ikaurov, serichaoo \\[10pt]}
+\usepackage{fancyhdr}
+
+\fancypagestyle{plain}{%redefining plain pagestyle
+\fancyhf{} %clear all headers and footers fields
+\fancyhead[R]{\thepage} %prints the page number on the right side of the header
+\fancyhead[L]{Columbia University: CU Later}
+}
+
+\title{\vspace{50mm} \huge Columbia University: CU Later Team Reference Document \\[20pt]}
+\author{Kevin Yang, Innokentiy Kaurov, Eric Yuang Shao \\[10pt]}
 \date{May 21th 2024}
 
 
