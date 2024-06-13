@@ -312,3 +312,42 @@ ll get_max_factor(ll _x) {
   return max_factor;
 }
 ```
+
+## Berlekamp-Massey
+
++ Recovers any $n$-order linear recurrence relation from the first $2n$ terms of the sequence.
++ Input $s$ is the sequence to be analyzed.
++ Output $c$ is the shortest sequence $c_1, ..., c_n$, such that
+$$s_m=\sum_{i=1}^{n} c_i \cdot s_{m-i} \text{, for all } m \ge n.$$
++ Be careful since $c$ is returned in 0-based indexation.
++ Complexity: $O(N^2)$
+
+```cpp
+vector<ll> berlekamp_massey(vector<ll> s) {
+  int n = sz(s), l = 0, m = 1;
+  vector<ll> b(n), c(n);
+  ll ldd = b[0] = c[0] = 1;
+  for (int i = 0; i < n; i++, m++) {
+    ll d = s[i];
+    for (int j = 1; j <= l; j++) d = (d + c[j] * s[i - j]) % MOD;
+    if (d == 0) continue;
+    vector<ll> temp = c;
+    ll coef = d * power(ldd, MOD - 2) % MOD;
+    for (int j = m; j < n; j++){
+      c[j] = (c[j] + MOD - coef * b[j - m]) % MOD;
+      if (c[j] < 0) c[j] += MOD;
+    }
+    if (2 * l <= i) {
+      l = i + 1 - l;
+      b = temp;
+      ldd = d;
+      m = 0;
+    }
+  }
+  c.resize(l + 1);
+  c.erase(c.begin());
+  for (ll &x : c)
+      x = (MOD - x) % MOD;
+  return c;
+}
+```
