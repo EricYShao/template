@@ -387,3 +387,45 @@ ll calc_kth(vector<ll> s, vector<ll> c, ll k){
   return ans;
 }
 ```
+## Matrix Exponentiation: $O(n^3 \log{b})$
+```cpp
+const int N = 100, MOD = 1e9 + 7;
+
+struct matrix{
+  ll m[N][N];
+  int n;
+  matrix(){
+    n = N;
+    memset(m, 0, sizeof(m));
+  };
+  matrix(int n_){
+    n = n_;
+    memset(m, 0, sizeof(m));
+  };
+  matrix(int n_, ll val){
+    n = n_;
+    memset(m, 0, sizeof(m));
+    for (int i = 0; i < n; i++) m[i][i] = val;
+  };
+
+  matrix operator* (matrix oth){
+    matrix res(n);
+    for (int i = 0; i < n; i++){
+      for (int j = 0; j < n; j++){
+        for (int k = 0; k < n; k++){
+          res.m[i][j] = (res.m[i][j] + m[i][k] * oth.m[k][j]) % MOD;
+        }
+      }
+    }
+    return res;
+  }
+};
+
+matrix power(matrix a, ll b){
+  matrix res(a.n, 1);
+  for (; b; a = a * a, b >>= 1){
+    if (b & 1) res = res * a;
+  }
+  return res;
+}
+```
