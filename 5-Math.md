@@ -351,3 +351,39 @@ vector<ll> berlekamp_massey(vector<ll> s) {
   return c;
 }
 ```
+
+## Calculating k-th term of a linear recurrence
++ Given the first $n$ terms $s_0, s_1, ..., s_{n-1}$ and the sequence $c_1, c_2, ..., c_n$ such that
+$$s_m=\sum_{i=1}^{n} c_i \cdot s_{m-i} \text{, for all } m \ge n,$$
+the function calc_kth computes $s_k$.
++ Complexity: $O(n^2 \log{k})$
+```cpp
+vector<ll> poly_mult_mod(vector<ll> p, vector<ll> q, vector<ll>& c){
+  vector<ll> ans(sz(p) + sz(q) - 1);
+  for (int i = 0; i < sz(p); i++){
+    for (int j = 0; j < sz(q); j++){
+      ans[i + j] = (ans[i + j] + p[i] * q[j]) % MOD;
+    }
+  }
+  int n = sz(ans), m = sz(c);
+  for (int i = n - 1; i >= m; i--){
+    for (int j = 0; j < m; j++){
+      ans[i - 1 - j] = (ans[i - 1 - j] + c[j] * ans[i]) % MOD;
+    }
+  }
+  ans.resize(m);
+  return ans;
+}
+
+ll calc_kth(vector<ll> s, vector<ll> c, ll k){
+  assert(sz(s) >= sz(c)); // size of s can be greater than c, but not less
+  if (k < sz(s)) return s[k];
+  vector<ll> res{1};
+  for (vector<ll> poly = {0, 1}; k; poly = poly_mult_mod(poly, poly, c), k >>= 1){
+    if (k & 1) res = poly_mult_mod(res, poly, c);
+  }
+  ll ans = 0;
+  for (int i = 0; i < min(sz(res), sz(c)); i++) ans = (ans + s[i] * res[i]) % MOD;
+  return ans;
+}
+```
