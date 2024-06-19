@@ -430,3 +430,20 @@ ll calc_kth(vector<ll> s, vector<ll> c, ll k){
   return ans;
 }
 ```
+
+## Partition Function
++ Returns number of partitions of $n$ in $O(n^{1.5})$
+```cpp
+int partition(int n) {
+  int dp[n + 1];
+  dp[0] = 1;
+  for (int i = 1; i <= n; i++) {
+    dp[i] = 0;
+    for (int j = 1, r = 1; i - (3 * j * j - j) / 2 >= 0; ++j, r *= -1) {
+      dp[i] += dp[i - (3 * j * j - j) / 2] * r;
+      if (i - (3 * j * j + j) / 2 >= 0) dp[i] += dp[i - (3 * j * j + j) / 2] * r;
+    }
+  }
+  return dp[n];
+}
+```
