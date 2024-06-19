@@ -449,13 +449,23 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
 ```
 
 ## MIT's FFT/NTT, Polynomial mod/log/exp Template
-+ For integers rounding works if $(|a| + |b|)\max(a, b) < \mathtt{\sim} 10^9$, or in theory maybe $10^6$.
++ For integers rounding works if $(|a| + |b|)\max(a, b) < \mathtt{\sim} 10^9$, or in theory maybe $10^6$
++ For $\deg P = n$,
++ Finds $\frac{1}{P(x)}$ in $O(n \log n)$
++ Finds $e^{P(x)}$ in $O(n \log n)$
++ Finds $\ln (P(x))$ in $O(n \log n)$
++ Finds $P(x)^k$ in $O(n \log n)$
++ Evaluates $P(x_1), \cdots, P(x_n)$ in $O(n \log^2 n)$
++ Performs Lagrange Interpolation in $O(n \log^2 n)$
 ```cpp
 // use #define FFT 1 to use FFT with doubles instead of NTT (default)
 // Examples:
 // poly a(n+1); // constructs degree n poly
 // a[0].v = 10; // assigns constant term a_0 = 10
 // poly b = exp(a);
+// poly is vector<num>
+// for NTT, num stores just one int named v
+// for FFT, num stores two doubles named x (real), y (imag)
 
 #define sz(x) ((int)x.size())
 #define rep(i, j, k) for (int i = int(j); i < int(k); i++)
