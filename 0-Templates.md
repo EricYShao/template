@@ -22,14 +22,9 @@ typedef vector<int> vi;
 typedef vector<ll> vll;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
-typedef pair<double, double> pdd;
-const ld PI = acosl(-1);
-const ll mod7 = 1e9 + 7;
-const ll mod9 = 998244353;
-const ll INF = 2*1024*1024*1023;
 const char nl = '\n';
 #define forn(i, n) for (int i = 0; i < int(n); i++)
-ll k, n, m, u, v, w;
+ll k, n, m, u, v, w, x, y, z;
 string s, t;
 
 bool multiTest = 1;
@@ -51,6 +46,11 @@ int main(){
 + to type after the start of the contest
 
 ```cpp
+typedef pair<double, double> pdd;
+const ld PI = acosl(-1);
+const ll mod7 = 1e9 + 7;
+const ll mod9 = 998244353;
+const ll INF = 2*1024*1024*1023;
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <ext/pb_ds/assoc_container.hpp> 
 #include <ext/pb_ds/tree_policy.hpp>
