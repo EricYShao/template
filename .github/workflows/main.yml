@@ -22,9 +22,9 @@ jobs:
         cd /tmp/pandoc
         python -m pip --no-cache-dir install setuptools wheel
         python -m pip --no-cache-dir install pandocfilters Pygments
+        sudo apt-get update
         sudo apt install -y texlive texlive-xetex latexmk wget
         sudo apt-get -y --fix-missing
-        sudo apt-get -y update
         wget -q "https://github.com/jgm/pandoc/releases/download/2.7.3/pandoc-2.7.3-1-amd64.deb"
         sudo dpkg -i pandoc-2.7.3-1-amd64.deb
         rm -rf *.deb
