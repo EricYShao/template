@@ -29,6 +29,12 @@ struct TPoint{
   T abs2() const {
     return x * x + y * y;
   }
+  T len() const {
+    return sqrtl(abs2());
+  }
+  TPoint unit() const {
+    return TPoint(x, y) / len();
+  }
 };
 template<typename T>
 bool operator< (TPoint<T>& A, TPoint<T>& B){
