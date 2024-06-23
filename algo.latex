@@ -173,7 +173,7 @@ $if(listings)$
     columns=flexible,
     breaklines=true,
     breakatwhitespace=false,
-    numbers=left,
+    numbers=none,
     numberstyle=\scriptsize,
     prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\rhookswarrow}},
     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\rcurvearrowse\space}},
