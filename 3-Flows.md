@@ -79,7 +79,7 @@ struct Dinic {
 };
 // To recover flow through original edges: iterate over even indices in edges.
 ```
-## MCMF – maximize flow, then minimize its cost. $O(Fmn)$.
+## MCMF – maximize flow, then minimize its cost. $O(mn + Fm \log{n})$.
 
 ```cpp
 #include <ext/pb_ds/priority_queue.hpp>
