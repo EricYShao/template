@@ -78,6 +78,7 @@ struct Dinic {
     }
 };
 // To recover flow through original edges: iterate over even indices in edges.
+// To recover minimum cut: DFS from s using ALL of the edges in the Dinic.edges vector for which flow < cap.
 ```
 ## MCMF – maximize flow, then minimize its cost. $O(mn + Fm \log{n})$.
 
