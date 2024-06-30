@@ -290,3 +290,83 @@ vector<TPoint<T>> minkowski_sum(vector<TPoint<T>> P, vector<TPoint<T>> Q){
 }
 using Point = TPoint<ll>; using Line = TLine<ll>; using Ray = TRay<ll>; const ld PI = acos(-1);
 ```
+## Half-plane intersection algorithm
++ Given $N$ half-plane conditions in the form of a ray, computes the vertices of their intersection polygon.
++ Complexity: $O(N \log{N})$.
++ A ray is defined by a point $p$ and direction vector $dp$. The half-plane is to the **left** from the direction vector.
+```cpp
+// Extra functions needed: point operations, smul, vmul
+const ld EPS = 1e-9;
+
+int sgn(ld a){
+  return (a > EPS) - (a < -EPS);
+}
+int half(point p){
+  return p.y != 0? sgn(p.y) : -sgn(p.x);
+}
+bool angle_comp(point a, point b){
+  int A = half(a), B = half(b);
+  return A == B? vmul(a, b) > 0 : A < B;
+}
+struct ray{
+  point p, dp; // origin, direction
+  ray(point p_, point dp_){
+    p = p_, dp = dp_;
+  }
+  point isect(ray l){
+    return p + dp * (vmul(l.dp, l.p - p) / vmul(l.dp, dp));
+  }
+  bool operator<(ray l){
+    return angle_comp(dp, l.dp);
+  }
+};
+vector<point> half_plane_isect(vector<ray> rays, ld DX = 1e9, ld DY = 1e9){
+  // constrain the area to [0, DX] x [0, DY]
+  rays.pb({point(0, 0), point(1, 0)});
+  rays.pb({point(DX, 0), point(0, 1)});
+  rays.pb({point(DX, DY), point(-1, 0)});
+  rays.pb({point(0, DY), point(0, -1)});
+  sort(all(rays));
+  {
+    vector<ray> nrays;
+    for (auto t : rays){
+      if (nrays.empty() || vmul(nrays.back().dp, t.dp) > EPS){
+        nrays.pb(t);
+        continue;
+      }
+      if (vmul(t.dp, t.p - nrays.back().p) > 0) nrays.back() = t;
+    }
+    swap(rays, nrays);
+  }
+  auto bad = [&] (ray a, ray b, ray c){
+    point p1 = a.isect(b), p2 = b.isect(c);
+    if (smul(p2 - p1, b.dp) <= EPS){
+      if (vmul(a.dp, c.dp) <= 0) return 2;
+      return 1;
+    }
+    return 0;
+  };
+  #define reduce(t) \
+          while (sz(poly) > 1){ \
+            int b = bad(poly[sz(poly) - 2], poly.back(), t); \
+            if (b == 2) return {}; \
+            if (b == 1) poly.pop_back(); \
+            else break; \
+          }
+  deque<ray> poly;
+  for (auto t : rays){
+    reduce(t);
+    poly.pb(t);
+  }
+  for (;; poly.pop_front()){
+    reduce(poly[0]);
+    if (!bad(poly.back(), poly[0], poly[1])) break;
+  }
+  assert(sz(poly) >= 3); // expect nonzero area
+  vector<point> poly_points;
+  for (int i = 0; i < sz(poly); i++){
+    poly_points.pb(poly[i].isect(poly[(i + 1) % sz(poly)]));
+  }
+  return poly_points;
+}
+```
