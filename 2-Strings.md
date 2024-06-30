@@ -58,7 +58,7 @@ pair<vector<int>, vector<int>> manacher(string s) {
     while (t[i + p[i] + 1] == t[i - p[i] - 1]) p[i]++;
     if (i + p[i] > r + c) r = p[i], c = i;
   }
-	vector<int> even(sz(s)), odd(sz(s));
+  vector<int> even(sz(s)), odd(sz(s));
   for (int i = 0; i < sz(s); i++){
     even[i] = p[2 * i + 1] / 2, odd[i] = p[2 * i + 2] / 2;
   }
