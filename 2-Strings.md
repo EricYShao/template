@@ -42,12 +42,15 @@ vector<int> z_function(string s){
 ```
 ## Manacher’s algorithm
 ```cpp
-string longest_palindrome(string& s) {
-  // init "abc" -> "^$a#b#c$"
+/*
+Finds longest palindromes centered at each index
+even[i] = d --> [i - d, i + d - 1] is a max-palindrome
+odd[i] = d  --> [i - d, i + d] is a max-palindrome
+*/
+pair<vector<int>, vector<int>> manacher(string s) {
   vector<char> t{'^', '#'};
   for (char c : s) t.push_back(c), t.push_back('#');
   t.push_back('$');
-  // manacher
   int n = t.size(), r = 0, c = 0;
   vector<int> p(n, 0);
   for (int i = 1; i < n - 1; i++) {
@@ -55,11 +58,10 @@ string longest_palindrome(string& s) {
     while (t[i + p[i] + 1] == t[i - p[i] - 1]) p[i]++;
     if (i + p[i] > r + c) r = p[i], c = i;
   }
-	// s[i] -> p[2 * i + 2] (even), p[2 * i + 2] (odd)
-  // output answer
-  int index = 0;
-  for (int i = 0; i < n; i++)
-    if (p[index] < p[i]) index = i;
-  return s.substr((index - p[index]) / 2, p[index]);
+	vector<int> even(sz(s)), odd(sz(s));
+  for (int i = 0; i < sz(s); i++){
+    even[i] = p[2 * i + 1] / 2, odd[i] = p[2 * i + 2] / 2;
+  }
+  return {even, odd};
 }
 ```
