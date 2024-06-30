@@ -16,7 +16,7 @@ vector<int> prefix_function(string s){
 vector<int> kmp(string s, string k){
   string st = k + "#" + s;
   vector<int> res;
-  auto pi = pf(st);
+  auto pi = prefix_function(st);
   for (int i = 0; i < sz(st); i++){
     if (pi[i] == sz(k)){
       res.pb(i - 2 * sz(k));
