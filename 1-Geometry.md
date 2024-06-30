@@ -293,7 +293,7 @@ using Point = TPoint<ll>; using Line = TLine<ll>; using Ray = TRay<ll>; const ld
 ## Half-plane intersection
 + Given $N$ half-plane conditions in the form of a ray, computes the vertices of their intersection polygon.
 + Complexity: $O(N \log{N})$.
-+ A ray is defined by a point $p$ and direction vector $dp$. The half-plane is to the **left** from the direction vector.
++ A ray is defined by a point $p$ and direction vector $dp$. The half-plane is to the **left** of the direction vector.
 ```cpp
 // Extra functions needed: point operations, smul, vmul
 const ld EPS = 1e-9;
