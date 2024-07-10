@@ -3,9 +3,9 @@
 
 ```cpp
 struct FlowEdge {
-    int v, u;
+    int from, to;
     ll cap, flow = 0;
-    FlowEdge(int v, int u, ll cap) : v(v), u(u), cap(cap) {}
+    FlowEdge(int u, int v, ll cap) : from(u), to(v), cap(cap) {}
 };
 struct Dinic {
     const ll flow_inf = 1e18;
@@ -14,17 +14,18 @@ struct Dinic {
     int n, m = 0;
     int s, t;
     vector<int> level, ptr;
+    vector<bool> used;
     queue<int> q;
     Dinic(int n, int s, int t) : n(n), s(s), t(t) {
         adj.resize(n);
         level.resize(n);
         ptr.resize(n);
     }
-    void add_edge(int v, int u, ll cap) {
-        edges.emplace_back(v, u, cap);
-        edges.emplace_back(u, v, 0);
-        adj[v].push_back(m);
-        adj[u].push_back(m + 1);
+    void add_edge(int u, int v, ll cap) {
+        edges.emplace_back(u, v, cap);
+        edges.emplace_back(v, u, 0);
+        adj[u].push_back(m);
+        adj[v].push_back(m + 1);
         m += 2;
     }
     bool bfs() {
@@ -34,10 +35,10 @@ struct Dinic {
             for (int id : adj[v]) {
                 if (edges[id].cap - edges[id].flow < 1)
                     continue;
-                if (level[edges[id].u] != -1)
+                if (level[edges[id].to] != -1)
                     continue;
-                level[edges[id].u] = level[v] + 1;
-                q.push(edges[id].u);
+                level[edges[id].to] = level[v] + 1;
+                q.push(edges[id].to);
             }
         }
         return level[t] != -1;
@@ -49,7 +50,7 @@ struct Dinic {
             return pushed;
         for (int& cid = ptr[v]; cid < (int)adj[v].size(); cid++) {
             int id = adj[v][cid];
-            int u = edges[id].u;
+            int u = edges[id].to;
             if (level[v] + 1 != level[u] || edges[id].cap - edges[id].flow < 1)
                 continue;
             ll tr = dfs(u, min(pushed, edges[id].cap - edges[id].flow));
@@ -76,9 +77,25 @@ struct Dinic {
         }
         return f;
     }
+
+    void cut_dfs(int v){
+      used[v] = 1;
+      for (auto i : adj[v]){
+        if (edges[i].flow < edges[i].cap && !used[edges[i].to]){
+          cut_dfs(edges[i].to);
+        }
+      }
+    }
+
+    // Assumes that max flow is already calculated
+    // true -> vertex is in S, false -> vertex is in T
+    vector<bool> min_cut(){
+      used = vector<bool>(n);
+      cut_dfs(s);
+      return used;
+    }
 };
 // To recover flow through original edges: iterate over even indices in edges.
-// To recover minimum cut: DFS from s using ALL of the edges in the Dinic.edges vector for which flow < cap.
 ```
 ## MCMF – maximize flow, then minimize its cost. $O(mn + Fm \log{n})$.
 
