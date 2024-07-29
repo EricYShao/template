@@ -1,193 +1,167 @@
 # Geometry
 
-+ Basic stuff
+# Point basics
 ```cpp
-template<typename T>
-struct TPoint{
-  T x, y;
-  int id;
-  static constexpr T eps = static_cast<T>(1e-9);
-  TPoint() : x(0), y(0), id(-1) {}
-  TPoint(const T& x_, const T& y_) : x(x_), y(y_), id(-1) {}
-  TPoint(const T& x_, const T& y_, const int id_) : x(x_), y(y_), id(id_) {}
+const ld EPS = 1e-9;
+
+struct point{
+  ld x, y;
+  point() : x(0), y(0) {}
+  point(ld x_, ld y_) : x(x_), y(y_) {}
  
-  TPoint operator + (const TPoint& rhs) const {
-    return TPoint(x + rhs.x, y + rhs.y);
+  point operator+ (point rhs) const{
+    return point(x + rhs.x, y + rhs.y);
   }
-  TPoint operator - (const TPoint& rhs) const {
-    return TPoint(x - rhs.x, y - rhs.y);
+  point operator- (point rhs) const{
+    return point(x - rhs.x, y - rhs.y);
   }
-  TPoint operator * (const T& rhs) const {
-    return TPoint(x * rhs, y * rhs);
+  point operator* (ld rhs) const{
+    return point(x * rhs, y * rhs);
   }
-  TPoint operator / (const T& rhs) const {
-    return TPoint(x / rhs, y / rhs);
+  point operator/ (ld rhs) const{
+    return point(x / rhs, y / rhs);
   }
-  TPoint ort() const {
-    return TPoint(-y, x);
+  point ort() const{
+    return point(-y, x);
   }
-  T abs2() const {
+  ld abs2() const{
     return x * x + y * y;
   }
-  T len() const {
+  ld len() const{
     return sqrtl(abs2());
   }
-  TPoint unit() const {
-    return TPoint(x, y) / len();
+  point unit() const{
+    return point(x, y) / len();
+  }
+  point rotate(ld a) const{
+    return point(x * cosl(a) - y * sinl(a), x * sinl(a) + y * cosl(a));
+  }
+  friend ostream& operator<<(ostream& os, point p){
+    return os << "(" << p.x << "," << p.y << ")";
+  }
+
+  bool operator< (point rhs) const{
+    return make_pair(x, y) < make_pair(rhs.x, rhs.y);
+  }
+  bool operator== (point rhs) const{
+    return abs(x - rhs.x) < EPS && abs(y - rhs.y) < EPS;
   }
 };
-template<typename T>
-bool operator< (TPoint<T>& A, TPoint<T>& B){
-  return make_pair(A.x, A.y) < make_pair(B.x, B.y);
+
+ld sq(ld a){
+  return a * a;
 }
-template<typename T>
-bool operator== (TPoint<T>& A, TPoint<T>& B){
-  return abs(A.x - B.x) <= TPoint<T>::eps && abs(A.y - B.y) <= TPoint<T>::eps;
+ld smul(point a, point b){
+  return a.x * b.x + a.y * b.y;
 }
-template<typename T>
-struct TLine{
-  T a, b, c;
-  TLine() : a(0), b(0), c(0) {}
-  TLine(const T& a_, const T& b_, const T& c_) : a(a_), b(b_), c(c_) {}
-  TLine(const TPoint<T>& p1, const TPoint<T>& p2){
+ld vmul(point a, point b){
+  return a.x * b.y - a.y * b.x;
+}
+ld dist(point a, point b){
+  return (a - b).len();
+}
+bool acw(point a, point b){
+  return vmul(a, b) > -EPS;
+}
+bool cw(point a, point b){
+  return vmul(a, b) < EPS;
+}
+int sgn(ld x){
+  return (x > EPS) - (x < EPS);
+}
+```
+# Line basics
+```cpp
+struct line{
+  ld a, b, c;
+  line() : a(0), b(0), c(0) {}
+  line(ld a_, ld b_, ld c_) : a(a_), b(b_), c(c_) {}
+  line(point p1, point p2){
     a = p1.y - p2.y;
     b = p2.x - p1.x;
     c = -a * p1.x - b * p1.y;
   }
 };
-template<typename T>
-T det(const T& a11, const T& a12, const T& a21, const T& a22){
+
+ld det(ld a11, ld a12, ld a21, ld a22){
   return a11 * a22 - a12 * a21;
 }
-template<typename T>
-T sq(const T& a){
-  return a * a;
+bool parallel(line l1, line l2){
+  return abs(vmul(point(l1.a, l1.b), point(l2.a, l2.b))) < EPS;
 }
-template<typename T>
-T smul(const TPoint<T>& a, const TPoint<T>& b){
-  return a.x * b.x + a.y * b.y;
-}
-template<typename T>
-T vmul(const TPoint<T>& a, const TPoint<T>& b){
-  return det(a.x, a.y, b.x, b.y);
-}
-template<typename T>
-bool parallel(const TLine<T>& l1, const TLine<T>& l2){
-  return abs(vmul(TPoint<T>(l1.a, l1.b), TPoint<T>(l2.a, l2.b))) <= TPoint<T>::eps;
-}
-template<typename T>
-bool equivalent(const TLine<T>& l1, const TLine<T>& l2){
+bool operator==(line l1, line l2){
   return parallel(l1, l2) &&
-  abs(det(l1.b, l1.c, l2.b, l2.c)) <= TPoint<T>::eps &&
-  abs(det(l1.a, l1.c, l2.a, l2.c)) <= TPoint<T>::eps;
+  abs(det(l1.b, l1.c, l2.b, l2.c)) < EPS &&
+  abs(det(l1.a, l1.c, l2.a, l2.c)) < EPS;
 }
 ```
-+ Intersection
+# Line and segment intersections
 ```cpp
-template<typename T>
-TPoint<T> intersection(const TLine<T>& l1, const TLine<T>& l2){
-  return TPoint<T>(
+// {p, 0} - unique intersection, {p, 1} - infinite, {p, 2} - none
+pair<point, int> line_inter(line l1, line l2){
+  if (parallel(l1, l2)){
+    return {point(), l1 == l2? 1 : 2};
+  }
+  return {point(
     det(-l1.c, l1.b, -l2.c, l2.b) / det(l1.a, l1.b, l2.a, l2.b),
     det(l1.a, -l1.c, l2.a, -l2.c) / det(l1.a, l1.b, l2.a, l2.b)
-  );
+  ), 0};
 }
-template<typename T>
-int sign(const T& x){
-  if (abs(x) <= TPoint<T>::eps) return 0;
-  return x > 0? +1 : -1;
+
+
+// Checks if p lies on ab
+bool is_on_seg(point p, point a, point b){
+  return abs(vmul(p - a, p - b)) < EPS && smul(p - a, p - b) < EPS;
+}
+
+/*
+If a unique intersection point between the line segments going from a to b and from c to d exists then it is returned.
+If no intersection point exists an empty vector is returned.
+If infinitely many exist a vector with 2 elements is returned, containing the endpoints of the common line segment.
+*/
+vector<point> segment_inter(point a, point b, point c, point d) {
+  auto oa = vmul(d - c, a - c), ob = vmul(d - c, b - c), oc = vmul(b - a, c - a), od = vmul(b - a, d - a);
+  if (sgn(oa) * sgn(ob) < 0 && sgn(oc) * sgn(od) < 0) return {(a * ob - b * oa) / (ob - oa)};
+  set<point> s;
+  if (is_on_seg(a, c, d)) s.insert(a);
+  if (is_on_seg(b, c, d)) s.insert(b);
+  if (is_on_seg(c, a, b)) s.insert(c);
+  if (is_on_seg(d, a, b)) s.insert(d);
+  return {all(s)};
 }
 ```
-+ Area
+# Distances from a point to line and segment
 ```cpp
-template<typename T>
-T area(const vector<TPoint<T>>& pts){
+// Distance from p to line ab
+ld line_dist(point p, point a, point b){
+  return vmul(b - a, p - a) / (b - a).len();
+}
+
+// Distance from p to segment ab
+ld segment_dist(point p, point a, point b){
+  if (a == b) return (p - a).len();
+  auto d = (a - b).abs2(), t = min(d, max((ld)0, smul(p - a, b - a)));
+  return ((p - a) * d - (b - a) * t).len() / d;
+}
+```
+# Polygon area
+```cpp
+ld area(vector<point> pts){
   int n = sz(pts);
-  T ans = 0;
+  ld ans = 0;
   for (int i = 0; i < n; i++){
     ans += vmul(pts[i], pts[(i + 1) % n]);
   }
   return abs(ans) / 2;
 }
-template<typename T>
-T dist_pp(const TPoint<T>& a, const TPoint<T>& b){
-  return sqrt(sq(a.x - b.x) + sq(a.y - b.y));
-}
-template<typename T>
-TLine<T> perp_line(const TLine<T>& l, const TPoint<T>& p){
-  T na = -l.b, nb = l.a, nc = - na * p.x - nb * p.y;
-  return TLine<T>(na, nb, nc);
-}
 ```
-+ Projection
+# Convex hull
++ Complexity: $O(n \log n)$.
 ```cpp
-template<typename T>
-TPoint<T> projection(const TPoint<T>& p, const TLine<T>& l){
-  return intersection(l, perp_line(l, p));
-}
-template<typename T>
-T dist_pl(const TPoint<T>& p, const TLine<T>& l){
-  return dist_pp(p, projection(p, l));
-}
-template<typename T>
-struct TRay{
-  TLine<T> l;
-  TPoint<T> start, dirvec;
-  TRay() : l(), start(), dirvec() {}
-  TRay(const TPoint<T>& p1, const TPoint<T>& p2){
-    l = TLine<T>(p1, p2);
-    start = p1, dirvec = p2 - p1;
-  }
-};
-template<typename T>
-bool is_on_line(const TPoint<T>& p, const TLine<T>& l){
-  return abs(l.a * p.x + l.b * p.y + l.c) <= TPoint<T>::eps;
-}
-template<typename T>
-bool is_on_ray(const TPoint<T>& p, const TRay<T>& r){
-  if (is_on_line(p, r.l)){
-    return sign(smul(r.dirvec, TPoint<T>(p - r.start))) != -1;
-  }
-  else return false;
-}
-template<typename T>
-bool is_on_seg(const TPoint<T>& P, const TPoint<T>& A, const TPoint<T>& B){
-  return is_on_ray(P, TRay<T>(A, B)) && is_on_ray(P, TRay<T>(B, A));
-}
-template<typename T>
-T dist_pr(const TPoint<T>& P, const TRay<T>& R){
-  auto H = projection(P, R.l);
-  return is_on_ray(H, R)? dist_pp(P, H) : dist_pp(P, R.start);
-}
-template<typename T>
-T dist_ps(const TPoint<T>& P, const TPoint<T>& A, const TPoint<T>& B){
-  auto H = projection(P, TLine<T>(A, B));
-  if (is_on_seg(H, A, B)) return dist_pp(P, H);
-  else return min(dist_pp(P, A), dist_pp(P, B));
-}
-```
-+ acw
-```cpp
-template<typename T>
-bool acw(const TPoint<T>& A, const TPoint<T>& B){
-  T mul = vmul(A, B);
-  return mul > 0 || abs(mul) <= TPoint<T>::eps;
-}
-```
-+ cw
-```cpp
-template<typename T>
-bool cw(const TPoint<T>& A, const TPoint<T>& B){
-  T mul = vmul(A, B);
-  return mul < 0 || abs(mul) <= TPoint<T>::eps;
-}
-```
-+ Convex Hull
-```cpp
-template<typename T>
-vector<TPoint<T>> convex_hull(vector<TPoint<T>> pts){
+vector<point> convex_hull(vector<point> pts){
   sort(all(pts));
   pts.erase(unique(all(pts)), pts.end());
-  vector<TPoint<T>> up, down;
+  vector<point> up, down;
   for (auto p : pts){
     while (sz(up) > 1 && acw(up.end()[-1] - up.end()[-2], p - up.end()[-2])) up.pop_back();
     while (sz(down) > 1 && cw(down.end()[-1] - down.end()[-2], p - down.end()[-2])) down.pop_back();
@@ -197,27 +171,15 @@ vector<TPoint<T>> convex_hull(vector<TPoint<T>> pts){
   return down;
 }
 ```
-+ in_triangle
+# Point location in a convex polygon
++ Complexity: $O(n)$ precalculation and $O(\log n)$ query.
 ```cpp
-template<typename T>
-bool in_triangle(TPoint<T>& P, TPoint<T>& A, TPoint<T>& B, TPoint<T>& C){
-  if (is_on_seg(P, A, B) || is_on_seg(P, B, C) || is_on_seg(P, C, A)) return true;
-  return cw(P - A, B - A) == cw(P - B, C - B) && 
-  cw(P - A, B - A) == cw(P - C, A - C);
-}
-```
-+ prep_convex_poly
-```cpp
-template<typename T>
-void prep_convex_poly(vector<TPoint<T>>& pts){
+void prep_convex_poly(vector<point>& pts){
   rotate(pts.begin(), min_element(all(pts)), pts.end());
 }
-```
-+ in_convex_poly:
-```cpp
+
 // 0 - Outside, 1 - Exclusively Inside, 2 - On the Border
-template<typename T>
-int in_convex_poly(TPoint<T>& p, vector<TPoint<T>>& pts){
+int in_convex_poly(point p, vector<point>& pts){
   int n = sz(pts);
   if (!n) return 0;
   if (n <= 2) return is_on_seg(p, pts[0], pts.back());
@@ -235,60 +197,57 @@ int in_convex_poly(TPoint<T>& p, vector<TPoint<T>>& pts){
   return 1;
 }
 ```
-+ in_simple_poly
+# Point location in a simple polygon
++ Complexity: $O(n)$.
 ```cpp
 // 0 - Outside, 1 - Exclusively Inside, 2 - On the Border
-template<typename T>
-int in_simple_poly(TPoint<T> p, vector<TPoint<T>>& pts){
+int in_simple_poly(point p, vector<point>& pts){
   int n = sz(pts);
   bool res = 0;
   for (int i = 0; i < n; i++){
     auto a = pts[i], b = pts[(i + 1) % n];
     if (is_on_seg(p, a, b)) return 2;
-    if (((a.y > p.y) - (b.y > p.y)) * vmul(b - p, a - p) > TPoint<T>::eps){
+    if (((a.y > p.y) - (b.y > p.y)) * vmul(b - p, a - p) > EPS){
       res ^= 1;
     }
   }
   return res;
 }
 ```
-+ minkowski_rotate
+# Minkowski Sum
++ For two convex polygons $P$ and $Q$, returns the set of points $(p + q)$, where $p \in P, q \in Q$.
++ This set is also a convex polygon.
++ Complexity: $O(n)$.
 ```cpp
-template<typename T>
-void minkowski_rotate(vector<TPoint<T>>& P){
+void minkowski_rotate(vector<point>& P){
   int pos = 0;
   for (int i = 1; i < sz(P); i++){
-    if (abs(P[i].y - P[pos].y) <= TPoint<T>::eps){
+    if (abs(P[i].y - P[pos].y) <= EPS){
       if (P[i].x < P[pos].x) pos = i;
     }
     else if (P[i].y < P[pos].y) pos = i;
   }
   rotate(P.begin(), P.begin() + pos, P.end());
 }
-```
-+ minkowski_sum
-```cpp
-// P and Q are strictly convex, points given in counterclockwise order
-template<typename T>
-vector<TPoint<T>> minkowski_sum(vector<TPoint<T>> P, vector<TPoint<T>> Q){
+// P and Q are strictly convex, points given in counterclockwise order.
+vector<point> minkowski_sum(vector<point> P, vector<point> Q){
   minkowski_rotate(P);
   minkowski_rotate(Q);
   P.pb(P[0]);
   Q.pb(Q[0]);
-  vector<TPoint<T>> ans;
+  vector<point> ans;
   int i = 0, j = 0;
   while (i < sz(P) - 1 || j < sz(Q) - 1){
     ans.pb(P[i] + Q[j]);
-    T curmul;
+    ld curmul;
     if (i == sz(P) - 1) curmul = -1;
     else if (j == sz(Q) - 1) curmul = +1;
     else curmul = vmul(P[i + 1] - P[i], Q[j + 1] - Q[j]);
-    if (abs(curmul) < TPoint<T>::eps || curmul > 0) i++;
-    if (abs(curmul) < TPoint<T>::eps || curmul < 0) j++;
+    if (abs(curmul) < EPS || curmul > 0) i++;
+    if (abs(curmul) < EPS || curmul < 0) j++;
   }
   return ans;
 }
-using Point = TPoint<ll>; using Line = TLine<ll>; using Ray = TRay<ll>; const ld PI = acos(-1);
 ```
 ## Half-plane intersection
 + Given $N$ half-plane conditions in the form of a ray, computes the vertices of their intersection polygon.
