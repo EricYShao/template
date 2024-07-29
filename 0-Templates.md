@@ -25,7 +25,7 @@ typedef pair<ll, ll> pll;
 const char nl = '\n';
 #define forn(i, n) for (int i = 0; i < int(n); i++)
 ll k, n, m, u, v, w, x, y, z;
-string s, t;
+string s;
 
 bool multiTest = 1;
 void solve(int tt){
