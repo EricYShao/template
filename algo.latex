@@ -4,11 +4,9 @@ $if(colorlinks)$
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 $endif$
 %
-\documentclass{article}
+\documentclass[twocolumn]{article}
 \setlength{\voffset}{-0.3cm}
-\usepackage{multicol}
-\setlength{\columnseprule}{0.5pt}
-\setlength{\columnsep}{10pt}
+\setlength{\columnsep}{1cm}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -160,7 +158,7 @@ $if(verbatim-in-note)$
 \VerbatimFootnotes % allows verbatim text in footnotes
 $endif$
 $if(geometry)$
-\usepackage[landscape,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $endif$
 $if(beamer)$
 \newif\ifbibliography
@@ -173,7 +171,7 @@ $if(listings)$
     columns=flexible,
     breaklines=true,
     breakatwhitespace=false,
-    numbers=none,
+    numbers=left,
     numberstyle=\scriptsize,
     prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\rhookswarrow}},
     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\rcurvearrowse\space}},
@@ -197,7 +195,7 @@ $if(listings)$
   keywordstyle=\color{blue},       % keyword style
 %   language=Octave,                 % the language of the code
   morekeywords={*,...},            % if you want to add more keywords to the set
-%   numbers=none,                    % where to put the line-numbers; possible values are (none, left, right)
+%   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
 %   numbersep=5pt,                   % how far the line-numbers are from the code
 %   numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
@@ -405,7 +403,6 @@ $endif$
 \end{titlepage}
 
 \newpage
-\begin{multicols*}{3}
 
 $for(include-before)$
 $include-before$
@@ -483,5 +480,4 @@ $for(include-after)$
 $include-after$
 
 $endfor$
-\end{multicols*}
 \end{document}
