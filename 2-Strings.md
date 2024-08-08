@@ -13,6 +13,7 @@ vector<int> prefix_function(string s){
   }
   return pi;
 }
+// Returns the positions of the first character
 vector<int> kmp(string s, string k){
   string st = k + "#" + s;
   vector<int> res;
