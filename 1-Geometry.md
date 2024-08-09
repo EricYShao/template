@@ -306,12 +306,12 @@ vector<point> half_plane_isect(vector<ray> rays, ld DX = 1e9, ld DY = 1e9){
     return 0;
   };
   #define reduce(t) \
-          while (sz(poly) > 1){ \
-            int b = bad(poly[sz(poly) - 2], poly.back(), t); \
-            if (b == 2) return {}; \
-            if (b == 1) poly.pop_back(); \
-            else break; \
-          }
+    while (sz(poly) > 1){ \
+      int b = bad(poly[sz(poly) - 2], poly.back(), t); \
+      if (b == 2) return {}; \
+      if (b == 1) poly.pop_back(); \
+      else break; \
+    }
   deque<ray> poly;
   for (auto t : rays){
     reduce(t);
