@@ -1,6 +1,6 @@
 # Geometry
 
-# Point basics
+## Point basics
 ```cpp
 const ld EPS = 1e-9;
 
@@ -70,7 +70,7 @@ int sgn(ld x){
   return (x > EPS) - (x < EPS);
 }
 ```
-# Line basics
+## Line basics
 ```cpp
 struct line{
   ld a, b, c;
@@ -130,7 +130,7 @@ vector<point> segment_inter(point a, point b, point c, point d) {
   return {all(s)};
 }
 ```
-# Distances from a point to line and segment
+## Distances from a point to line and segment
 ```cpp
 // Distance from p to line ab
 ld line_dist(point p, point a, point b){
@@ -144,7 +144,7 @@ ld segment_dist(point p, point a, point b){
   return ((p - a) * d - (b - a) * t).len() / d;
 }
 ```
-# Polygon area
+## Polygon area
 ```cpp
 ld area(vector<point> pts){
   int n = sz(pts);
@@ -155,7 +155,7 @@ ld area(vector<point> pts){
   return abs(ans) / 2;
 }
 ```
-# Convex hull
+## Convex hull
 + Complexity: $O(n \log n)$.
 ```cpp
 vector<point> convex_hull(vector<point> pts){
@@ -171,7 +171,7 @@ vector<point> convex_hull(vector<point> pts){
   return down;
 }
 ```
-# Point location in a convex polygon
+## Point location in a convex polygon
 + Complexity: $O(n)$ precalculation and $O(\log n)$ query.
 ```cpp
 void prep_convex_poly(vector<point>& pts){
@@ -197,7 +197,7 @@ int in_convex_poly(point p, vector<point>& pts){
   return 1;
 }
 ```
-# Point location in a simple polygon
+## Point location in a simple polygon
 + Complexity: $O(n)$.
 ```cpp
 // 0 - Outside, 1 - Exclusively Inside, 2 - On the Border
@@ -214,7 +214,7 @@ int in_simple_poly(point p, vector<point>& pts){
   return res;
 }
 ```
-# Minkowski Sum
+## Minkowski Sum
 + For two convex polygons $P$ and $Q$, returns the set of points $(p + q)$, where $p \in P, q \in Q$.
 + This set is also a convex polygon.
 + Complexity: $O(n)$.
