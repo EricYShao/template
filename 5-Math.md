@@ -59,9 +59,9 @@ matrix power(matrix a, ll b){
 + Can find all solutions given $(x_0, y_0): \forall k, a(x_0 + kb/g) + b(y_0 - ka/g) = \gcd(a, b)$.
 ```cpp
 ll euclid(ll a, ll b, ll &x, ll &y) {
-	if (!b) return x = 1, y = 0, a;
-	ll d = euclid(b, a % b, y, x);
-	return y -= a/b * x, d;
+  if (!b) return x = 1, y = 0, a;
+  ll d = euclid(b, a % b, y, x);
+  return y -= a/b * x, d;
 }
 ```
 
@@ -72,12 +72,12 @@ ll euclid(ll a, ll b, ll &x, ll &y) {
 + $O(\max(\log m, \log n))$
 ```cpp
 ll crt(ll a, ll m, ll b, ll n) {
-	if (n > m) swap(a, b), swap(m, n);
-	ll x, y, g = euclid(m, n, x, y);
-	assert((a - b) % g == 0); // else no solution
+  if (n > m) swap(a, b), swap(m, n);
+  ll x, y, g = euclid(m, n, x, y);
+  assert((a - b) % g == 0); // else no solution
   // can replace assert with whatever needed
-	x = (b - a) % n * x % n / g * m + a;
-	return x < 0 ? x + m*n/g : x;
+  x = (b - a) % n * x % n / g * m + a;
+  return x < 0 ? x + m*n/g : x;
 }
 ```
 
@@ -321,7 +321,7 @@ vector<ll> berlekamp_massey(vector<ll> s) {
   c.resize(l + 1);
   c.erase(c.begin());
   for (ll &x : c)
-      x = (MOD - x) % MOD;
+    x = (MOD - x) % MOD;
   return c;
 }
 ```
