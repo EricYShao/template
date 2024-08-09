@@ -54,20 +54,30 @@ matrix power(matrix a, ll b){
 ```
 
 ## Extended Euclidean Algorithm
-
++ $O(\max(\log a, \log b))$
++ Finds solution $(x, y)$ to $ax + by = \gcd(a, b)$
++ Can find all solutions given $(x_0, y_0): \forall k, a(x_0 + kb/g) + b(y_0 - ka/g) = \gcd(a, b)$.
 ```cpp
-// gives (x, y) for ax + by = g
-// solutions given (x0, y0): a(x0 + kb/g) + b(y0 - ka/g) = g
-int gcd(int a, int b, int& x, int& y) {
-  x = 1, y = 0; int sum1 = a;
-  int x2 = 0, y2 = 1, sum2 = b;
-  while (sum2) {
-    int q = sum1 / sum2;
-    tie(x, x2) = make_tuple(x2, x - q * x2);
-    tie(y, y2) = make_tuple(y2, y - q * y2);
-    tie(sum1, sum2) = make_tuple(sum2, sum1 - q * sum2);
-  }
-  return sum1;
+ll euclid(ll a, ll b, ll &x, ll &y) {
+	if (!b) return x = 1, y = 0, a;
+	ll d = euclid(b, a % b, y, x);
+	return y -= a/b * x, d;
+}
+```
+
+## CRT
++ $crt(a, m, b, n)$ computes $x$ such that $x\equiv a \pmod m$, $x\equiv b \pmod n$
++ If $|a| < m$ and $|b| < n$, $x$ will obey $0 \le x < \text{lcm}(m, n)$.
++ Assumes $mn < 2^{62}$.
++ $O(\max(\log m, \log n))$
+```cpp
+ll crt(ll a, ll m, ll b, ll n) {
+	if (n > m) swap(a, b), swap(m, n);
+	ll x, y, g = euclid(m, n, x, y);
+	assert((a - b) % g == 0); // else no solution
+  // can replace assert with whatever needed
+	x = (b - a) % n * x % n / g * m + a;
+	return x < 0 ? x + m*n/g : x;
 }
 ```
 
