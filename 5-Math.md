@@ -903,3 +903,95 @@ struct LPSolver {
   }
 };
 ```
+
+## Matroid Intersection
++ Matroid is a pair $<X,I>$, where $X$ is a finite set and $I$ is a family of subsets of $X$ satisfying:
+    1. $\emptyset \in I$.
+    2. If $A \in I$ and $B \subseteq A$, then $B \in I$.
+    3. If $A, B \in I$ and $|A|>|B|$, then there exists $x \in A \backslash B$ such that $B \cup \{x\} \in I$.
++ Set $S$ is called **independent** if $S \in I$.
++ **Common matroids:** uniform (sets of bounded size); colorful (sets of colored elements where each color only appears once); graphic (acyclic sets of edges in a graph); linear-algebraic (sets of linearly independent vectors).
++ **Matroid Intersection Problem:** Given two matroids, find the largest common independent set.
++ A matroid has 3 functions:
+    - $\textit{check(int x)}$: returns if current matroid can add $x$ without becoming dependent.
+    - $\textit{add(int x)}$: adds an element to the matroid (guaranteed to never make it dependent).
+    - $\textit{clear()}$: sets the matroid to the empty matroid.
++ The matroid is given an $\textit{int}$ representing the element, and is expected to convert it (e.g: color or edge endpoints)
++ Pass the matroid with more expensive add/clear operations to M1.
++ **Complexity:** $R^2 \cdot N \cdot (M2.add + M1.check + M2.check) + R^3 \cdot (M1.add) + R^2 \cdot (M1.clear) + R \cdot N \cdot (M2.clear)$, where $R=\textit{answer}$.
+```cpp
+
+// Example matroid
+struct GraphicMatroid{
+  vector<pair<int, int>> e;
+  int n;
+  DSU dsu;
+
+  GraphicMatroid(vector<pair<int, int>> edges, int vertices){
+    e = edges, n = vertices;
+    dsu = DSU(n);
+  };
+  bool check(int idx){
+    return !dsu.same(e[idx].fi, e[idx].se);
+  }
+  void add(int idx){
+    dsu.unite(e[idx].fi, e[idx].se);
+  }
+  void clear(){
+    dsu = DSU(n);
+  }
+};
+
+template <class M1, class M2> struct MatroidIsect {
+	int n;
+	vector<char> iset;
+	M1 m1; M2 m2;
+	MatroidIsect(M1 m1, M2 m2, int n) : n(n), iset(n + 1), m1(m1), m2(m2) {}
+	vector<int> solve() {
+		for (int i = 0; i < n; i++) if (m1.check(i) && m2.check(i))
+			iset[i] = true, m1.add(i), m2.add(i);
+		while (augment());
+		vector<int> ans;
+		for (int i = 0; i < n; i++) if (iset[i]) ans.push_back(i);
+		return ans;
+	}
+	bool augment() {
+		vector<int> frm(n, -1);
+		queue<int> q({n}); // starts at dummy node
+		auto fwdE = [&](int a) {
+			vector<int> ans;
+			m1.clear();
+			for (int v = 0; v < n; v++) if (iset[v] && v != a) m1.add(v);
+			for (int b = 0; b < n; b++) if (!iset[b] && frm[b] == -1 && m1.check(b))
+				ans.push_back(b), frm[b] = a;
+			return ans;
+		};
+		auto backE = [&](int b) {
+			m2.clear();
+			for (int cas = 0; cas < 2; cas++) for (int v = 0; v < n; v++){
+				if ((v == b || iset[v]) && (frm[v] == -1) == cas) {
+					if (!m2.check(v))
+						return cas ? q.push(v), frm[v] = b, v : -1;
+					m2.add(v);
+				}
+      }
+			return n;
+		};
+		while (!q.empty()) {
+			int a = q.front(), c; q.pop();
+			for (int b : fwdE(a))
+				while((c = backE(b)) >= 0) if (c == n) {
+					while (b != n) iset[b] ^= 1, b = frm[b];
+					return true;
+				}
+		}
+		return false;
+	}
+};
+
+/*
+Usage:
+MatroidIsect<GraphicMatroid, ColorfulMatroid> solver(matroid1, matroid2, n);
+vector<int> answer = solver.solve();
+*/
+```
