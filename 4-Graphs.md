@@ -306,3 +306,48 @@ function<void(int, char)> solve = [&](int node, char cur) {
   }
 };
 ```
+
+## Biconnected Components and Block-Cut Tree
+
+```cpp
+vector<vector<int>> biconnected_components(vector<vector<int>> g) {
+	int n = sz(g);
+	vector<vector<int>> comps;
+	vector<int> stk, num(n), low(n);
+  int timer = 0;
+	// Finds the biconnected components
+	function<void(int, int)> dfs = [&](int v, int p) {
+		num[v] = low[v] = ++timer;
+		stk.pb(v);
+		for (int son : g[v]) {
+			if (son == p) continue;
+			if (num[son]) low[v] = min(low[v], num[son]);
+      else{
+				dfs(son, v);
+				low[v] = min(low[v], low[son]);
+				if (low[son] >= num[v]){
+					comps.pb({v});
+					while (comps.back().back() != son){
+						comps.back().pb(stk.back());
+						stk.pop_back();
+					}
+				}
+			}
+		}
+	};
+	dfs(0, -1);
+	// Build the block-cut tree
+	auto build_tree = [&]() {
+		vector<vector<int>> t(n);
+		for (auto &comp : comps){
+			t.push_back({});
+			for (int u : comp){
+				t.back().pb(u);
+        t[u].pb(sz(t) - 1);
+      }
+		}
+		return t;
+	};
+	return build_tree();
+}
+```
