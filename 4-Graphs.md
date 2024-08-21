@@ -308,8 +308,15 @@ function<void(int, char)> solve = [&](int node, char cur) {
 ```
 
 ## Biconnected Components and Block-Cut Tree
-
++ Biconnected components are the ones that have no articulation points.
++ They are defined by edge sets that are "bounded" by articulation points in the original graph.
++ The corresponding vertex sets are stored in $comps$.
++ Block-Cut tree is constructed by creating a fictive node for each component, and attaching edges to its members.
++ Articulation points in the original graph are the non-leaf non-fictive nodes in the BC tree.
++ Complexity: $O(n)$.
 ```cpp
+// Usage: pass in adjacency list in 0-based indexation.
+// Return: adjacency list of block-cut tree (nodes 0...n-1 represent original nodes, the rest are component nodes).
 vector<vector<int>> biconnected_components(vector<vector<int>> g) {
 	int n = sz(g);
 	vector<vector<int>> comps;
