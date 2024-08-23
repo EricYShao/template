@@ -100,170 +100,85 @@ struct Dinic {
 ## MCMF – maximize flow, then minimize its cost. $O(mn + Fm \log{n})$.
 
 ```cpp
-#include <ext/pb_ds/priority_queue.hpp>
-template <typename T, typename C>
-class MCMF {
-  public:
-    static constexpr T eps = (T) 1e-9;
+#include <bits/extc++.h> /// include-line, keep-include
 
-    struct edge {
-      int from;
-      int to;
-      T c;
-      T f;
-      C cost;
-    };
+const ll INF = LLONG_MAX / 4;
 
-    int n;
-    vector<vector<int>> g;
-    vector<edge> edges;
-    vector<C> d;
-    vector<C> pot;
-    __gnu_pbds::priority_queue<pair<C, int>> q;
-    vector<typename decltype(q)::point_iterator> its;
-    vector<int> pe;
-    const C INF_C = numeric_limits<C>::max() / 2;
+struct MCMF {
+	struct edge {
+		int from, to, rev;
+		ll cap, cost, flow;
+	};
+	int N;
+	vector<vector<edge>> ed;
+	vector<int> seen;
+	vector<ll> dist, pi;
+	vector<edge*> par;
 
-    explicit MCMF(int n_) : n(n_), g(n), d(n), pot(n, 0), its(n), pe(n) {}
+	MCMF(int N) : N(N), ed(N), seen(N), dist(N), pi(N), par(N) {}
 
-    int add(int from, int to, T forward_cap, C edge_cost, T backward_cap = 0) {
-      assert(0 <= from && from < n && 0 <= to && to < n);
-      assert(forward_cap >= 0 && backward_cap >= 0);
-      int id = static_cast<int>(edges.size());
-      g[from].push_back(id);
-      edges.push_back({from, to, forward_cap, 0, edge_cost});
-      g[to].push_back(id + 1);
-      edges.push_back({to, from, backward_cap, 0, -edge_cost});
-      return id;
-    }
+	void add_edge(int from, int to, ll cap, ll cost) {
+		if (from == to) return;
+		ed[from].push_back(edge{ from,to,sz(ed[to]),cap,cost,0 });
+		ed[to].push_back(edge{ to,from,sz(ed[from])-1,0,-cost,0 });
+	}
 
-    void expath(int st) {
-      fill(d.begin(), d.end(), INF_C);
-      q.clear();
-      fill(its.begin(), its.end(), q.end());
-      its[st] = q.push({pot[st], st});
-      d[st] = 0;
-      while (!q.empty()) {
-        int i = q.top().second;
-        q.pop();
-        its[i] = q.end();
-        for (int id : g[i]) {
-          const edge &e = edges[id];
-          int j = e.to;
-          if (e.c - e.f > eps && d[i] + e.cost < d[j]) {
-            d[j] = d[i] + e.cost;
-            pe[j] = id;
-            if (its[j] == q.end()) {
-              its[j] = q.push({pot[j] - d[j], j});
-            } else {
-              q.modify(its[j], {pot[j] - d[j], j});
-            }
-          }
-        }
-      }
-      swap(d, pot);
-    }
+	void path(int s) {
+		fill(all(seen), 0);
+		fill(all(dist), INF);
+		dist[s] = 0; ll di;
 
-    pair<T, C> max_flow(int st, int fin) {
-      T flow = 0;
-      C cost = 0;
-      bool ok = true;
-      for (auto& e : edges) {
-        if (e.c - e.f > eps && e.cost + pot[e.from] - pot[e.to] < 0) {
-          ok = false;
-          break;
-        }
-      }
-      if (ok) {
-        expath(st);
-      } else {
-        vector<int> deg(n, 0);
-        for (int i = 0; i < n; i++) {
-          for (int eid : g[i]) {
-            auto& e = edges[eid];
-            if (e.c - e.f > eps) {
-              deg[e.to] += 1;
-            }
-          }
-        }
-        vector<int> que;
-        for (int i = 0; i < n; i++) {
-          if (deg[i] == 0) {
-            que.push_back(i);
-          }
-        }
-        for (int b = 0; b < (int) que.size(); b++) {
-          for (int eid : g[que[b]]) {
-            auto& e = edges[eid];
-            if (e.c - e.f > eps) {
-              deg[e.to] -= 1;
-              if (deg[e.to] == 0) {
-                que.push_back(e.to);
-              }
-            }
-          }
-        }
-        fill(pot.begin(), pot.end(), INF_C);
-        pot[st] = 0;
-        if (static_cast<int>(que.size()) == n) {
-          for (int v : que) {
-            if (pot[v] < INF_C) {
-              for (int eid : g[v]) {
-                auto& e = edges[eid];
-                if (e.c - e.f > eps) {
-                  if (pot[v] + e.cost < pot[e.to]) {
-                    pot[e.to] = pot[v] + e.cost;
-                    pe[e.to] = eid;
-                  }
-                }
-              }
-            }
-          }
-        } else {
-          que.assign(1, st);
-          vector<bool> in_queue(n, false);
-          in_queue[st] = true;
-          for (int b = 0; b < (int) que.size(); b++) {
-            int i = que[b];
-            in_queue[i] = false;
-            for (int id : g[i]) {
-              const edge &e = edges[id];
-              if (e.c - e.f > eps && pot[i] + e.cost < pot[e.to]) {
-                pot[e.to] = pot[i] + e.cost;
-                pe[e.to] = id;
-                if (!in_queue[e.to]) {
-                  que.push_back(e.to);
-                  in_queue[e.to] = true;
-                }
-              }
-            }
-          }
-        }
-      }
-      while (pot[fin] < INF_C) {
-        T push = numeric_limits<T>::max();
-        int v = fin;
-        while (v != st) {
-          const edge &e = edges[pe[v]];
-          push = min(push, e.c - e.f);
-          v = e.from;
-        }
-        v = fin;
-        while (v != st) {
-          edge &e = edges[pe[v]];
-          e.f += push;
-          edge &back = edges[pe[v] ^ 1];
-          back.f -= push;
-          v = e.from;
-        }
-        flow += push;
-        cost += push * pot[fin];
-        expath(st);
-      }
-      return {flow, cost};
-    }
+		__gnu_pbds::priority_queue<pair<ll, int>> q;
+		vector<decltype(q)::point_iterator> its(N);
+		q.push({ 0, s });
+
+		while (!q.empty()) {
+			s = q.top().second; q.pop();
+			seen[s] = 1; di = dist[s] + pi[s];
+			for (edge& e : ed[s]) if (!seen[e.to]) {
+				ll val = di - pi[e.to] + e.cost;
+				if (e.cap - e.flow > 0 && val < dist[e.to]) {
+					dist[e.to] = val;
+					par[e.to] = &e;
+					if (its[e.to] == q.end())
+						its[e.to] = q.push({ -dist[e.to], e.to });
+					else
+						q.modify(its[e.to], { -dist[e.to], e.to });
+				}
+			}
+		}
+		for (int i = 0; i < N; i++) pi[i] = min(pi[i] + dist[i], INF);
+	}
+
+	pair<ll, ll> max_flow(int s, int t) {
+		ll totflow = 0, totcost = 0;
+		while (path(s), seen[t]) {
+			ll fl = INF;
+			for (edge* x = par[t]; x; x = par[x->from])
+				fl = min(fl, x->cap - x->flow);
+
+			totflow += fl;
+			for (edge* x = par[t]; x; x = par[x->from]) {
+				x->flow += fl;
+				ed[x->to][x->rev].flow -= fl;
+			}
+		}
+		for (int i = 0; i < N; i++) for(edge& e : ed[i]) totcost += e.cost * e.flow;
+		return {totflow, totcost/2};
+	}
+
+	// If some costs can be negative, call this before maxflow:
+	void setpi(int s) { // (otherwise, leave this out)
+		fill(all(pi), INF); pi[s] = 0;
+		int it = N, ch = 1; ll v;
+		while (ch-- && it--)
+			for (int i = 0; i < N; i++) if (pi[i] != INF)
+			  for (edge& e : ed[i]) if (e.cap)
+				  if ((v = pi[i] + e.cost) < pi[e.to])
+					  pi[e.to] = v, ch = 1;
+		assert(it >= 0); // negative cost cycle
+	}
 };
-
-// Examples: MCMF<int, int> g(n); g.add(u,v,c,w,0); g.max_flow(s,t).
+// Usage: MCMF g(n); g.add_edge(u,v,c,w); g.max_flow(s,t).
 // To recover flow through original edges: iterate over even indices in edges.
 ```
