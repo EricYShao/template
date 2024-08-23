@@ -143,6 +143,16 @@ int go(int v, char c){
 }
 ```
 ## Suffix Automaton
++ Given a string $S$, constructs a DAG that is an automaton of all suffixes of $S$.
++ The automaton has $\le 2n$ nodes and $\le 3n$ edges.
++ Properties (let all paths start at node 0):
+    - Every path represents a unique substring of $S$.
+    - A path ends at a terminal node iff it represents a suffix of $S$.
+    - All paths ending at a fixed node $v$ have the same set of right endpoints of their occurences in $S$.
+    - Let $endpos(v)$ represent this set. Then, $link(v) := u$ such that $endpos(v) \subset endpos(u)$ and $|endpos(u)|$ is smallest possible. $link(0):=-1$. Links form a tree.
+    - Let $len(v)$ be the longest path ending at $v$. All paths ending at $v$ have distinct lengths: every length from interval $[len(link(v))+1, len(v)]$.
++ One of the main applications is dealing with **distinct** substrings. Such problems can be solved with DFS and DP.
++ Complexity: $O(|S| \cdot \log{|\Sigma|)}$. Perhaps replace map with vector if $|\Sigma|$ is small.
 ```cpp
 const int MAXLEN = 1e5 + 20;
  
@@ -197,4 +207,10 @@ struct suffix_automaton{
     while (cur) st[cur].terminal = 1, cur = st[cur].link;
   }
 };
+/*
+Usage:
+suffix_automaton sa;
+for (int i = 0; i < sz(str); i++) sa.extend(str[i]);
+sa.mark_terminal();
+*/
 ```
