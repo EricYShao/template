@@ -484,7 +484,7 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
 };
 ```
 
-## Polynomial mod/log/exp, Multipoint/Interpolation Template
+## Poly mod, log, exp, multipoint, interpolation
 + $\frac{1}{P(x)}$ in $O(n \log n)$, $e^{P(x)}$ in $O(n \log n)$, $\ln (P(x))$ in $O(n \log n)$, $P(x)^k$ in $O(n \log n)$, Evaluates $P(x_1), \cdots, P(x_n)$ in $O(n \log^2 n)$, Lagrange Interpolation in $O(n \log^2 n)$
 ```cpp
 // Examples:
