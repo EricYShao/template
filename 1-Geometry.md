@@ -10,29 +10,21 @@ struct point{
   point(ld x_, ld y_) : x(x_), y(y_) {}
  
   point operator+ (point rhs) const{
-    return point(x + rhs.x, y + rhs.y);
-  }
+    return point(x + rhs.x, y + rhs.y); }
   point operator- (point rhs) const{
-    return point(x - rhs.x, y - rhs.y);
-  }
+    return point(x - rhs.x, y - rhs.y); }
   point operator* (ld rhs) const{
-    return point(x * rhs, y * rhs);
-  }
+    return point(x * rhs, y * rhs); }
   point operator/ (ld rhs) const{
-    return point(x / rhs, y / rhs);
-  }
+    return point(x / rhs, y / rhs); }
   point ort() const{
-    return point(-y, x);
-  }
+    return point(-y, x); }
   ld abs2() const{
-    return x * x + y * y;
-  }
+    return x * x + y * y; }
   ld len() const{
-    return sqrtl(abs2());
-  }
+    return sqrtl(abs2()); }
   point unit() const{
-    return point(x, y) / len();
-  }
+    return point(x, y) / len(); }
   point rotate(ld a) const{
     return point(x * cosl(a) - y * sinl(a), x * sinl(a) + y * cosl(a));
   }
@@ -49,26 +41,19 @@ struct point{
 };
 
 ld sq(ld a){
-  return a * a;
-}
+  return a * a; }
 ld smul(point a, point b){
-  return a.x * b.x + a.y * b.y;
-}
+  return a.x * b.x + a.y * b.y; }
 ld vmul(point a, point b){
-  return a.x * b.y - a.y * b.x;
-}
+  return a.x * b.y - a.y * b.x; }
 ld dist(point a, point b){
-  return (a - b).len();
-}
+  return (a - b).len(); }
 bool acw(point a, point b){
-  return vmul(a, b) > -EPS;
-}
+  return vmul(a, b) > -EPS; }
 bool cw(point a, point b){
-  return vmul(a, b) < EPS;
-}
+  return vmul(a, b) < EPS; }
 int sgn(ld x){
-  return (x > EPS) - (x < EPS);
-}
+  return (x > EPS) - (x < EPS); }
 ```
 ## Line basics
 ```cpp
@@ -144,15 +129,14 @@ ld segment_dist(point p, point a, point b){
   return ((p - a) * d - (b - a) * t).len() / d;
 }
 ```
-## Polygon area
+## Polygon area and Centroid
 ```cpp
-ld area(vector<point> pts){
-  int n = sz(pts);
-  ld ans = 0;
-  for (int i = 0; i < n; i++){
-    ans += vmul(pts[i], pts[(i + 1) % n]);
-  }
-  return abs(ans) / 2;
+pair<point,ld> cenArea(const vector<point>& v) { assert(sz(v) >= 3);
+	point cen(0, 0); ld area = 0; 
+	forn(i,sz(v)) {
+		int j = (i+1)%sz(v); ld a = vmul(v[i],v[j]);
+		cen = cen + a*(v[i]+v[j]); area += a; }
+	return {cen/area/(ld)3,area/2}; // area is SIGNED
 }
 ```
 ## Convex hull
@@ -327,5 +311,51 @@ vector<point> half_plane_isect(vector<ray> rays, ld DX = 1e9, ld DY = 1e9){
     poly_points.pb(poly[i].isect(poly[(i + 1) % sz(poly)]));
   }
   return poly_points;
+}
+```
+## Circles
++ Finds minimum enclosing circle of vector of points in expected $O(N)$
+```cpp
+// necessary point functions
+ld sq(ld a) { return a*a; }
+point operator+(const point& l, const point& r) { 
+	return point(l.x+r.x,l.y+r.y); }
+point operator*(const point& l, const ld& r) { 
+	return point(l.x*r,l.y*r); }
+point operator*(const ld& l, const point& r) { return r*l; }
+ld abs2(const point& p) { return sq(p.x)+sq(p.y); }
+ld abs(const point& p) { return sqrt(abs2(p)); }
+point conj(const point& p) { return point(p.x,-p.y); }
+point operator-(const point& l, const point& r) { 
+	return point(l.x-r.x,l.y-r.y); }
+point operator*(const point& l, const point& r) { 
+ 	return point(l.x*r.x-l.y*r.y,l.y*r.x+l.x*r.y); }
+point operator/(const point& l, const ld& r) { 
+ 	return point(l.x/r,l.y/r); }
+point operator/(const point& l, const point& r) { 
+ 	return l*conj(r)/abs2(r); }
+
+// circle code
+using circ = pair<point,ld>;
+
+circ ccCenter(point a, point b, point c) { 
+	b = b-a; c = c-a;
+	point res = b*c*(conj(c)-conj(b))/(b*conj(c)-conj(b)*c);
+	return {a+res,abs(res)};
+}
+
+circ mec(vector<point> ps) {
+    // expected O(N)
+	shuffle(all(ps), rng);
+	point o = ps[0]; ld r = 0, EPS = 1+1e-8;
+	forn(i,sz(ps)) if (abs(o-ps[i]) > r*EPS) {
+		o = ps[i], r = 0; // point is on MEC
+		forn(j,i) if (abs(o-ps[j]) > r*EPS) {
+			o = (ps[i]+ps[j])/2, r = abs(o-ps[i]);
+			forn(k,j) if (abs(o-ps[k]) > r*EPS) 
+				tie(o,r) = ccCenter(ps[i],ps[j],ps[k]);
+		}
+	}
+	return {o,r};
 }
 ```
