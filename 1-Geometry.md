@@ -56,7 +56,7 @@ int sgn(ld x){
   return (x > EPS) - (x < EPS); } // for integer: EPS = 0
 int half(point p) { return p.y != 0 ? sgn(p.y) : sgn(p.x); } // +1: [0, pi), -1: [pi, 2*pi)
 bool angle_comp(point a, point b) { int A = half(a), B = half(b);
-	return A == B ? cross(a, b) > 0 : A > B; }
+  return A == B ? cross(a, b) > 0 : A > B; }
 ```
 ## Line basics
 ```cpp
@@ -135,11 +135,11 @@ ld segment_dist(point p, point a, point b){
 ## Polygon area and Centroid
 ```cpp
 pair<point,ld> cenArea(const vector<point>& v) { assert(sz(v) >= 3);
-	point cen(0, 0); ld area = 0; 
-	forn(i,sz(v)) {
-		int j = (i+1)%sz(v); ld a = cross(v[i],v[j]);
-		cen = cen + a*(v[i]+v[j]); area += a; }
-	return {cen/area/(ld)3,area/2}; // area is SIGNED
+  point cen(0, 0); ld area = 0; 
+  forn(i,sz(v)) {
+    int j = (i+1)%sz(v); ld a = cross(v[i],v[j]);
+    cen = cen + a*(v[i]+v[j]); area += a; }
+  return {cen/area/(ld)3,area/2}; // area is SIGNED
 }
 ```
 ## Convex hull
@@ -322,43 +322,70 @@ vector<point> half_plane_isect(vector<ray> rays, ld DX = 1e9, ld DY = 1e9){
 // necessary point functions
 ld sq(ld a) { return a*a; }
 point operator+(const point& l, const point& r) { 
-	return point(l.x+r.x,l.y+r.y); }
+  return point(l.x+r.x,l.y+r.y); }
 point operator*(const point& l, const ld& r) { 
-	return point(l.x*r,l.y*r); }
+  return point(l.x*r,l.y*r); }
 point operator*(const ld& l, const point& r) { return r*l; }
 ld abs2(const point& p) { return sq(p.x)+sq(p.y); }
 ld abs(const point& p) { return sqrt(abs2(p)); }
 point conj(const point& p) { return point(p.x,-p.y); }
 point operator-(const point& l, const point& r) { 
-	return point(l.x-r.x,l.y-r.y); }
+  return point(l.x-r.x,l.y-r.y); }
 point operator*(const point& l, const point& r) { 
- 	return point(l.x*r.x-l.y*r.y,l.y*r.x+l.x*r.y); }
+   return point(l.x*r.x-l.y*r.y,l.y*r.x+l.x*r.y); }
 point operator/(const point& l, const ld& r) { 
- 	return point(l.x/r,l.y/r); }
+   return point(l.x/r,l.y/r); }
 point operator/(const point& l, const point& r) { 
- 	return l*conj(r)/abs2(r); }
+   return l*conj(r)/abs2(r); }
 
 // circle code
 using circ = pair<point,ld>;
 
 circ ccCenter(point a, point b, point c) { 
-	b = b-a; c = c-a;
-	point res = b*c*(conj(c)-conj(b))/(b*conj(c)-conj(b)*c);
-	return {a+res,abs(res)};
+  b = b-a; c = c-a;
+  point res = b*c*(conj(c)-conj(b))/(b*conj(c)-conj(b)*c);
+  return {a+res,abs(res)};
 }
 
 circ mec(vector<point> ps) {
-    // expected O(N)
-	shuffle(all(ps), rng);
-	point o = ps[0]; ld r = 0, EPS = 1+1e-8;
-	forn(i,sz(ps)) if (abs(o-ps[i]) > r*EPS) {
-		o = ps[i], r = 0; // point is on MEC
-		forn(j,i) if (abs(o-ps[j]) > r*EPS) {
-			o = (ps[i]+ps[j])/2, r = abs(o-ps[i]);
-			forn(k,j) if (abs(o-ps[k]) > r*EPS) 
-				tie(o,r) = ccCenter(ps[i],ps[j],ps[k]);
-		}
-	}
-	return {o,r};
+  // expected O(N)
+  shuffle(all(ps), rng);
+  point o = ps[0]; ld r = 0, EPS = 1+1e-8;
+  forn(i,sz(ps)) if (abs(o-ps[i]) > r*EPS) {
+    o = ps[i], r = 0; // point is on MEC
+    forn(j,i) if (abs(o-ps[j]) > r*EPS) {
+      o = (ps[i]+ps[j])/2, r = abs(o-ps[i]);
+      forn(k,j) if (abs(o-ps[k]) > r*EPS) 
+        tie(o,r) = ccCenter(ps[i],ps[j],ps[k]);
+    }
+  }
+  return {o,r};
 }
+```
++ Circle tangents, external and internal
+```cpp
+point unit(const point& p) { return p * (1/abs(p)); }
+
+point tangent(point p, circ c, int t = 0) {
+  c.se = abs(c.se); // abs needed because internal calls y.s < 0
+  if (c.se == 0) return c.fi;
+  ld d = abs(p-c.fi);
+  point a = pow(c.se/d,2)*(p-c.fi)+c.fi;
+  point b = sqrt(d*d-c.se*c.se)/d*c.se*unit(p-c.fi)*point(0,1); 
+  return t == 0 ? a+b : a-b;
+}
+vector<pair<point,point>> external(circ a, circ b) { 
+  vector<pair<point,point>> v; 
+  if (a.se == b.se) {
+    point tmp = unit(a.fi-b.fi)*a.se*point(0, 1);
+    v.emplace_back(a.fi+tmp,b.fi+tmp);
+    v.emplace_back(a.fi-tmp,b.fi-tmp);
+  } else {
+    point p = (b.se*a.fi-a.se*b.fi)/(b.se-a.se);
+    forn(i,2) v.emplace_back(tangent(p,a,i),tangent(p,b,i));
+  }
+  return v;
+}
+vector<pair<point,point>> internal(circ a, circ b) { 
+  return external({a.fi,-a.se},b); }
 ```
