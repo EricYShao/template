@@ -1,6 +1,6 @@
 # Geometry
 
-## Point basics
+## Point and vector basics
 ```cpp
 const ld EPS = 1e-9;
 
@@ -42,18 +42,21 @@ struct point{
 
 ld sq(ld a){
   return a * a; }
-ld smul(point a, point b){
+ld dot(point a, point b){
   return a.x * b.x + a.y * b.y; }
-ld vmul(point a, point b){
+ld cross(point a, point b){
   return a.x * b.y - a.y * b.x; }
 ld dist(point a, point b){
   return (a - b).len(); }
 bool acw(point a, point b){
-  return vmul(a, b) > -EPS; }
+  return cross(a, b) > -EPS; }
 bool cw(point a, point b){
-  return vmul(a, b) < EPS; }
+  return cross(a, b) < EPS; }
 int sgn(ld x){
-  return (x > EPS) - (x < EPS); }
+  return (x > EPS) - (x < EPS); } // for integer: EPS = 0
+int half(point p) { return p.y != 0 ? sgn(p.y) : sgn(p.x); } // +1: [0, pi), -1: [pi, 2*pi)
+bool angle_comp(point a, point b) { int A = half(a), B = half(b);
+	return A == B ? cross(a, b) > 0 : A > B; }
 ```
 ## Line basics
 ```cpp
@@ -72,7 +75,7 @@ ld det(ld a11, ld a12, ld a21, ld a22){
   return a11 * a22 - a12 * a21;
 }
 bool parallel(line l1, line l2){
-  return abs(vmul(point(l1.a, l1.b), point(l2.a, l2.b))) < EPS;
+  return abs(cross(point(l1.a, l1.b), point(l2.a, l2.b))) < EPS;
 }
 bool operator==(line l1, line l2){
   return parallel(l1, l2) &&
@@ -96,7 +99,7 @@ pair<point, int> line_inter(line l1, line l2){
 
 // Checks if p lies on ab
 bool is_on_seg(point p, point a, point b){
-  return abs(vmul(p - a, p - b)) < EPS && smul(p - a, p - b) < EPS;
+  return abs(cross(p - a, p - b)) < EPS && dot(p - a, p - b) < EPS;
 }
 
 /*
@@ -105,7 +108,7 @@ If no intersection point exists an empty vector is returned.
 If infinitely many exist a vector with 2 elements is returned, containing the endpoints of the common line segment.
 */
 vector<point> segment_inter(point a, point b, point c, point d) {
-  auto oa = vmul(d - c, a - c), ob = vmul(d - c, b - c), oc = vmul(b - a, c - a), od = vmul(b - a, d - a);
+  auto oa = cross(d - c, a - c), ob = cross(d - c, b - c), oc = cross(b - a, c - a), od = cross(b - a, d - a);
   if (sgn(oa) * sgn(ob) < 0 && sgn(oc) * sgn(od) < 0) return {(a * ob - b * oa) / (ob - oa)};
   set<point> s;
   if (is_on_seg(a, c, d)) s.insert(a);
@@ -119,13 +122,13 @@ vector<point> segment_inter(point a, point b, point c, point d) {
 ```cpp
 // Distance from p to line ab
 ld line_dist(point p, point a, point b){
-  return vmul(b - a, p - a) / (b - a).len();
+  return cross(b - a, p - a) / (b - a).len();
 }
 
 // Distance from p to segment ab
 ld segment_dist(point p, point a, point b){
   if (a == b) return (p - a).len();
-  auto d = (a - b).abs2(), t = min(d, max((ld)0, smul(p - a, b - a)));
+  auto d = (a - b).abs2(), t = min(d, max((ld)0, dot(p - a, b - a)));
   return ((p - a) * d - (b - a) * t).len() / d;
 }
 ```
@@ -134,7 +137,7 @@ ld segment_dist(point p, point a, point b){
 pair<point,ld> cenArea(const vector<point>& v) { assert(sz(v) >= 3);
 	point cen(0, 0); ld area = 0; 
 	forn(i,sz(v)) {
-		int j = (i+1)%sz(v); ld a = vmul(v[i],v[j]);
+		int j = (i+1)%sz(v); ld a = cross(v[i],v[j]);
 		cen = cen + a*(v[i]+v[j]); area += a; }
 	return {cen/area/(ld)3,area/2}; // area is SIGNED
 }
@@ -191,7 +194,7 @@ int in_simple_poly(point p, vector<point>& pts){
   for (int i = 0; i < n; i++){
     auto a = pts[i], b = pts[(i + 1) % n];
     if (is_on_seg(p, a, b)) return 2;
-    if (((a.y > p.y) - (b.y > p.y)) * vmul(b - p, a - p) > EPS){
+    if (((a.y > p.y) - (b.y > p.y)) * cross(b - p, a - p) > EPS){
       res ^= 1;
     }
   }
@@ -226,7 +229,7 @@ vector<point> minkowski_sum(vector<point> P, vector<point> Q){
     ld curmul;
     if (i == sz(P) - 1) curmul = -1;
     else if (j == sz(Q) - 1) curmul = +1;
-    else curmul = vmul(P[i + 1] - P[i], Q[j + 1] - Q[j]);
+    else curmul = cross(P[i + 1] - P[i], Q[j + 1] - Q[j]);
     if (abs(curmul) < EPS || curmul > 0) i++;
     if (abs(curmul) < EPS || curmul < 0) j++;
   }
@@ -238,7 +241,7 @@ vector<point> minkowski_sum(vector<point> P, vector<point> Q){
 + Complexity: $O(N \log{N})$.
 + A ray is defined by a point $p$ and direction vector $dp$. The half-plane is to the **left** of the direction vector.
 ```cpp
-// Extra functions needed: point operations, smul, vmul
+// Extra functions needed: point operations, dot, cross
 const ld EPS = 1e-9;
 
 int sgn(ld a){
@@ -249,7 +252,7 @@ int half(point p){
 }
 bool angle_comp(point a, point b){
   int A = half(a), B = half(b);
-  return A == B? vmul(a, b) > 0 : A < B;
+  return A == B? cross(a, b) > 0 : A < B;
 }
 struct ray{
   point p, dp; // origin, direction
@@ -257,7 +260,7 @@ struct ray{
     p = p_, dp = dp_;
   }
   point isect(ray l){
-    return p + dp * (vmul(l.dp, l.p - p) / vmul(l.dp, dp));
+    return p + dp * (cross(l.dp, l.p - p) / cross(l.dp, dp));
   }
   bool operator<(ray l){
     return angle_comp(dp, l.dp);
@@ -273,18 +276,18 @@ vector<point> half_plane_isect(vector<ray> rays, ld DX = 1e9, ld DY = 1e9){
   {
     vector<ray> nrays;
     for (auto t : rays){
-      if (nrays.empty() || vmul(nrays.back().dp, t.dp) > EPS){
+      if (nrays.empty() || cross(nrays.back().dp, t.dp) > EPS){
         nrays.pb(t);
         continue;
       }
-      if (vmul(t.dp, t.p - nrays.back().p) > 0) nrays.back() = t;
+      if (cross(t.dp, t.p - nrays.back().p) > 0) nrays.back() = t;
     }
     swap(rays, nrays);
   }
   auto bad = [&] (ray a, ray b, ray c){
     point p1 = a.isect(b), p2 = b.isect(c);
-    if (smul(p2 - p1, b.dp) <= EPS){
-      if (vmul(a.dp, c.dp) <= 0) return 2;
+    if (dot(p2 - p1, b.dp) <= EPS){
+      if (cross(a.dp, c.dp) <= 0) return 2;
       return 1;
     }
     return 0;
