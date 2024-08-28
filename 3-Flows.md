@@ -10,10 +10,10 @@ struct FlowEdge {
 struct Dinic {
   const ll flow_inf = 1e18;
   vector<FlowEdge> edges;
-  vector<vector<int>> adj;
+  vector<vi> adj;
   int n, m = 0;
   int s, t;
-  vector<int> level, ptr;
+  vi level, ptr;
   vector<bool> used;
   queue<int> q;
   Dinic(int n, int s, int t) : n(n), s(s), t(t) {
@@ -111,8 +111,8 @@ struct MCMF {
   };
   int N;
   vector<vector<edge>> ed;
-  vector<int> seen;
-  vector<ll> dist, pi;
+  vi seen;
+  vll dist, pi;
   vector<edge*> par;
 
   MCMF(int N) : N(N), ed(N), seen(N), dist(N), pi(N), par(N) {}

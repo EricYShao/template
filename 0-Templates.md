@@ -7,23 +7,23 @@ using namespace std;
 #define all(v) (v).begin(), (v).end()
 typedef long long ll;
 typedef long double ld;
+typedef vector<int> vi;
+typedef vector<ll> vll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define pb push_back
 #define sz(x) (int)(x).size()
 #define fi first
 #define se second
+#define forn(i, n) for (int i = 0; i < int(n); i++)
 #define endl '\n'
 ```
 
 ## Kevin’s template
 
 ```cpp
-// paste Kaurov’s Template, minus last line
-typedef vector<int> vi;
-typedef vector<ll> vll;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
+// paste Ken's Template, minus last line
 const char nl = '\n';
-#define forn(i, n) for (int i = 0; i < int(n); i++)
 ll k, n, m, u, v, w, x, y, z;
 string s;
 

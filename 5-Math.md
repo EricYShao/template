@@ -86,7 +86,7 @@ ll crt(ll a, ll m, ll b, ll n) {
 + Mobius Function
 
 ```cpp
-vector<int> prime;
+vi prime;
 bool is_composite[MAX_N];
 int mu[MAX_N];
 
@@ -116,7 +116,7 @@ void sieve(int n){
 + Euler's Totient Function
 
 ```cpp
-vector<int> prime;
+vi prime;
 bool is_composite[MAX_N];
 int phi[MAX_N];
 
@@ -165,7 +165,7 @@ int gaussian_elimination(vector<vector<T>> &a, int limit) {
       swap(a[r], a[id]);
       for (int j = c; j < w; j++) a[id][j] = -a[id][j];
     }
-    vector<int> nonzero;
+    vi nonzero;
     for (int j = c; j < w; j++) {
       if (!is_0(a[r][j])) nonzero.push_back(j);
     }
@@ -322,15 +322,15 @@ $$s_m=\sum_{i=1}^{n} c_i \cdot s_{m-i} \text{, for all } m \ge n.$$
 + Complexity: $O(N^2)$
 
 ```cpp
-vector<ll> berlekamp_massey(vector<ll> s) {
+vll berlekamp_massey(vll s) {
   int n = sz(s), l = 0, m = 1;
-  vector<ll> b(n), c(n);
+  vll b(n), c(n);
   ll ldd = b[0] = c[0] = 1;
   for (int i = 0; i < n; i++, m++) {
     ll d = s[i];
     for (int j = 1; j <= l; j++) d = (d + c[j] * s[i - j]) % MOD;
     if (d == 0) continue;
-    vector<ll> temp = c;
+    vll temp = c;
     ll coef = d * power(ldd, MOD - 2) % MOD;
     for (int j = m; j < n; j++){
       c[j] = (c[j] + MOD - coef * b[j - m]) % MOD;
@@ -357,8 +357,8 @@ $$s_m=\sum_{i=1}^{n} c_i \cdot s_{m-i} \text{, for all } m \ge n,$$
 the function calc_kth computes $s_k$.
 + Complexity: $O(n^2 \log{k})$
 ```cpp
-vector<ll> poly_mult_mod(vector<ll> p, vector<ll> q, vector<ll>& c){
-  vector<ll> ans(sz(p) + sz(q) - 1);
+vll poly_mult_mod(vll p, vll q, vll& c){
+  vll ans(sz(p) + sz(q) - 1);
   for (int i = 0; i < sz(p); i++){
     for (int j = 0; j < sz(q); j++){
       ans[i + j] = (ans[i + j] + p[i] * q[j]) % MOD;
@@ -374,11 +374,11 @@ vector<ll> poly_mult_mod(vector<ll> p, vector<ll> q, vector<ll>& c){
   return ans;
 }
 
-ll calc_kth(vector<ll> s, vector<ll> c, ll k){
+ll calc_kth(vll s, vll c, ll k){
   assert(sz(s) >= sz(c)); // size of s can be greater than c, but not less
   if (k < sz(s)) return s[k];
-  vector<ll> res{1};
-  for (vector<ll> poly = {0, 1}; k; poly = poly_mult_mod(poly, poly, c), k >>= 1){
+  vll res{1};
+  for (vll poly = {0, 1}; k; poly = poly_mult_mod(poly, poly, c), k >>= 1){
     if (k & 1) res = poly_mult_mod(res, poly, c);
   }
   ll ans = 0;
@@ -408,10 +408,10 @@ int partition(int n) {
 
 ```cpp
 const int MOD = 998244353;
-void ntt(vector<ll>& a, int f) {
+void ntt(vll& a, int f) {
   int n = int(a.size());
-  vector<ll> w(n);
-  vector<int> rev(n);
+  vll w(n);
+  vi rev(n);
   for (int i = 0; i < n; i++) rev[i] = (rev[i / 2] / 2) | ((i & 1) * (n / 2));
   for (int i = 0; i < n; i++) {
     if (i < rev[i]) swap(a[i], a[rev[i]]);
@@ -432,7 +432,7 @@ void ntt(vector<ll>& a, int f) {
     for (auto& x : a) x = x * iv % MOD;
   }
 }
-vector<ll> mul(vector<ll> a, vector<ll> b) {
+vll mul(vll a, vll b) {
   int n = 1, m = (int)a.size() + (int)b.size() - 1;
   while (n < m) n *= 2;
   a.resize(n), b.resize(n);
@@ -453,7 +453,7 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
   while ((1 << bit) < n + m - 1) bit++;
   int len = 1 << bit;
   vector<complex<ld>> a(len), b(len);
-  vector<int> rev(len);
+  vi rev(len);
   for (int i = 0; i < n; i++) a[i].real(aa[i]);
   for (int i = 0; i < m; i++) b[i].real(bb[i]);
   for (int i = 0; i < len; i++) rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (bit - 1));
@@ -497,7 +497,7 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
 #define sz(x) ((int)x.size())
 #define rep(i, j, k) for (int i = int(j); i < int(k); i++)
 #define per(i, a, b) for (int i = (b)-1; i >= (a); --i)
-using vi = vector<int>;
+using vi = vi;
 
 const int MOD = 998244353, g = 3;
 
@@ -726,7 +726,7 @@ const T eps = 1e-8, inf = 1/.0;
 
 struct LPSolver {
   int m, n;
-  vector<int> N,B;
+  vi N,B;
   vvd D;
   LPSolver(const vvd& A, const vd& b, const vd& c) : m(sz(b)), n(sz(c)), N(n+1), B(m), D(m+2, vd(n+2)){
     rep(i,0,m) rep(j,0,n) D[i][j] = A[i][j];
@@ -821,19 +821,19 @@ template <class M1, class M2> struct MatroidIsect {
 	vector<char> iset;
 	M1 m1; M2 m2;
 	MatroidIsect(M1 m1, M2 m2, int n) : n(n), iset(n + 1), m1(m1), m2(m2) {}
-	vector<int> solve() {
+	vi solve() {
 		for (int i = 0; i < n; i++) if (m1.check(i) && m2.check(i))
 			iset[i] = true, m1.add(i), m2.add(i);
 		while (augment());
-		vector<int> ans;
+		vi ans;
 		for (int i = 0; i < n; i++) if (iset[i]) ans.push_back(i);
 		return ans;
 	}
 	bool augment() {
-		vector<int> frm(n, -1);
+		vi frm(n, -1);
 		queue<int> q({n}); // starts at dummy node
 		auto fwdE = [&](int a) {
-			vector<int> ans;
+			vi ans;
 			m1.clear();
 			for (int v = 0; v < n; v++) if (iset[v] && v != a) m1.add(v);
 			for (int b = 0; b < n; b++) if (!iset[b] && frm[b] == -1 && m1.check(b))
@@ -866,6 +866,6 @@ template <class M1, class M2> struct MatroidIsect {
 /*
 Usage:
 MatroidIsect<GraphicMatroid, ColorfulMatroid> solver(matroid1, matroid2, n);
-vector<int> answer = solver.solve();
+vi answer = solver.solve();
 */
 ```

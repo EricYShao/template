@@ -163,7 +163,7 @@ T query(int l, int r){
 
 ```cpp
 struct SuffixArray{
-  vector<int> p, c, h;
+  vi p, c, h;
   SparseTable<int> st;
   /*
   In the end, array c gives the position of each suffix in p
@@ -187,13 +187,13 @@ struct SuffixArray{
     for (int i = 1; i < n; i++){
       c[p[i]] = c[p[i - 1]] + (s[p[i]] != s[p[i - 1]]);
     }
-    vector<int> p2(n), c2(n);
+    vi p2(n), c2(n);
     // w is half-length of each string.
     for (int w = 1; w < n; w <<= 1){
       for (int i = 0; i < n; i++){
         p2[i] = (p[i] - w + n) % n;
       }
-      vector<int> cnt(n);
+      vi cnt(n);
       for (auto i : c) cnt[i]++;
       for (int i = 1; i < n; i++) cnt[i] += cnt[i - 1];
       for (int i = n - 1; i >= 0; i--){
@@ -257,7 +257,7 @@ int ctoi(char c){
 
 // To add terminal links, use DFS
 struct Node{
-  vector<int> nxt;
+  vi nxt;
   int link;
   bool terminal;
 
@@ -386,7 +386,7 @@ struct LiChaoTree{
   };
   int n;
   bool minimum, on_points;
-  vector<ll> pts;
+  vll pts;
   vector<line> t;
 
   void clear(){
@@ -399,7 +399,7 @@ struct LiChaoTree{
     clear();
   };
 
-  LiChaoTree(vector<ll> pts_, bool min_){ // This constructor will build LCT on the set of points you pass. The points may be in any order and contain duplicates.
+  LiChaoTree(vll pts_, bool min_){ // This constructor will build LCT on the set of points you pass. The points may be in any order and contain duplicates.
     pts = pts_, minimum = min_;
     sort(all(pts));
     pts.erase(unique(all(pts)), pts.end());

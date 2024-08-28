@@ -15,7 +15,7 @@ for (int i = 0; i < n; i++) for (int mask = 0; mask < (1 << n); mask++) if ((mas
 + **Sufficient condition:** $cost(a, d) + cost(b, c) \ge cost(a, c) + cost(b, d)$ where $a < b < c < d$.
 + Complexity: $O(M \cdot N \cdot \log N)$ for computing $dp[M][N]$.
 ```cpp
-vector<ll> dp_old(N), dp_new(N);
+vll dp_old(N), dp_new(N);
 
 void rec(int l, int r, int optl, int optr){
   if (l > r) return;

@@ -8,7 +8,7 @@ Complexity: O(n1 * m). Usually runs much faster. MUCH FASTER!!!
 */
 const int N = 305;
 
-vector<int> g[N]; // Stores edges from left half to right.
+vi g[N]; // Stores edges from left half to right.
 bool used[N]; // Stores if vertex from left half is used.
 int mt[N]; // For every vertex in right half, stores to which vertex in left half it's matched (-1 if not matched).
 
@@ -51,11 +51,11 @@ int main(){
 
 ```cpp
 int INF = 1e9; // constant greater than any number in the matrix
-vector<int> u(n+1), v(m+1), p(m+1), way(m+1);
+vi u(n+1), v(m+1), p(m+1), way(m+1);
 for (int i=1; i<=n; ++i) {
   p[0] = i;
   int j0 = 0;
-  vector<int> minv (m+1, INF);
+  vi minv (m+1, INF);
   vector<bool> used (m+1, false);
   do {
     used[j0] = true;
@@ -81,7 +81,7 @@ for (int i=1; i<=n; ++i) {
     j0 = j1;
   } while (j0);
 }
-vector<int> ans (n+1); // ans[i] stores the column selected for row i
+vi ans (n+1); // ans[i] stores the column selected for row i
 for (int j=1; j<=m; ++j)
   ans[p[j]] = j;
 int cost = -v[0]; // the total cost of the matching
@@ -122,10 +122,10 @@ void dfs(int v){
 ## SCC and 2-SAT
 
 ```cpp
-void scc(vector<vector<int>>& g, int* idx) {
+void scc(vector<vi>& g, int* idx) {
   int n = g.size(), ct = 0;
   int out[n];
-  vector<int> ginv[n];
+  vi ginv[n];
   memset(out, -1, sizeof out);
   memset(idx, -1, n * sizeof(int));
   function<void(int)> dfs = [&](int cur) {
@@ -136,7 +136,7 @@ void scc(vector<vector<int>>& g, int* idx) {
     }
     ct++; out[cur] = ct;
   };
-  vector<int> order;
+  vi order;
   for(int i = 0; i < n; i++) {
     order.push_back(i);
     if(out[i] == -1) dfs(i);
@@ -165,9 +165,9 @@ void scc(vector<vector<int>>& g, int* idx) {
 }
 
 // 0 => impossible, 1 => possible
-pair<int,vector<int>> sat2(int n, vector<pair<int,int>>& clauses) {
-  vector<int> ans(n);
-  vector<vector<int>> g(2*n + 1);
+pair<int,vi> sat2(int n, vector<pii>& clauses) {
+  vi ans(n);
+  vector<vi> g(2*n + 1);
   for(auto [x, y] : clauses) {
     x = x < 0 ? -x + n : x;
     y = y < 0 ? -y + n : y;
@@ -196,7 +196,7 @@ For each connected component, call "dfs(starting vertex, starting vertex)".
 */
 const int N = 2e5 + 10; // Careful with the constant!
  
-vector<int> g[N];
+vi g[N];
 int tin[N], fup[N], timer;
 map<pair<int, int>, bool> is_bridge;
  
@@ -230,7 +230,7 @@ for (int i = 1; i < m; i++){
 }
 sort(all(order), [&] (int u, int v){return tin[u] < tin[v];});
 order.erase(unique(all(order)), order.end());
-vector<int> stk{order[0]};
+vi stk{order[0]};
 for (int i = 1; i < sz(order); i++){
   int v = order[i];
   while (tout[stk.back()] < tout[v]) stk.pop_back();
@@ -317,10 +317,10 @@ function<void(int, char)> solve = [&](int node, char cur) {
 ```cpp
 // Usage: pass in adjacency list in 0-based indexation.
 // Return: adjacency list of block-cut tree (nodes 0...n-1 represent original nodes, the rest are component nodes).
-vector<vector<int>> biconnected_components(vector<vector<int>> g) {
+vector<vi> biconnected_components(vector<vi> g) {
 	int n = sz(g);
-	vector<vector<int>> comps;
-	vector<int> stk, num(n), low(n);
+	vector<vi> comps;
+	vi stk, num(n), low(n);
   int timer = 0;
 	// Finds the biconnected components
 	function<void(int, int)> dfs = [&](int v, int p) {
@@ -345,7 +345,7 @@ vector<vector<int>> biconnected_components(vector<vector<int>> g) {
 	dfs(0, -1);
 	// Build the block-cut tree
 	auto build_tree = [&]() {
-		vector<vector<int>> t(n);
+		vector<vi> t(n);
 		for (auto &comp : comps){
 			t.push_back({});
 			for (int u : comp){

@@ -1,9 +1,9 @@
 # Strings
 
 ```cpp
-vector<int> prefix_function(string s){
+vi prefix_function(string s){
   int n = sz(s);
-  vector<int> pi(n);
+  vi pi(n);
   for (int i = 1; i < n; i++){
     int k = pi[i - 1];
     while (k > 0 && s[i] != s[k]){
@@ -14,9 +14,9 @@ vector<int> prefix_function(string s){
   return pi;
 }
 // Returns the positions of the first character
-vector<int> kmp(string s, string k){
+vi kmp(string s, string k){
   string st = k + "#" + s;
-  vector<int> res;
+  vi res;
   auto pi = prefix_function(st);
   for (int i = 0; i < sz(st); i++){
     if (pi[i] == sz(k)){
@@ -25,9 +25,9 @@ vector<int> kmp(string s, string k){
   }
   return res;
 }
-vector<int> z_function(string s){
+vi z_function(string s){
   int n = sz(s);
-  vector<int> z(n);
+  vi z(n);
   int l = 0, r = 0;
   for (int i = 1; i < n; i++){
     if (r >= i) z[i] = min(z[i - l], r - i + 1);
@@ -48,18 +48,18 @@ Finds longest palindromes centered at each index
 even[i] = d --> [i - d, i + d - 1] is a max-palindrome
 odd[i] = d  --> [i - d, i + d] is a max-palindrome
 */
-pair<vector<int>, vector<int>> manacher(string s) {
+pair<vi, vi> manacher(string s) {
   vector<char> t{'^', '#'};
   for (char c : s) t.push_back(c), t.push_back('#');
   t.push_back('$');
   int n = t.size(), r = 0, c = 0;
-  vector<int> p(n, 0);
+  vi p(n, 0);
   for (int i = 1; i < n - 1; i++) {
     if (i < r + c) p[i] = min(p[2 * c - i], r + c - i);
     while (t[i + p[i] + 1] == t[i - p[i] - 1]) p[i]++;
     if (i + p[i] > r + c) r = p[i], c = i;
   }
-  vector<int> even(sz(s)), odd(sz(s));
+  vi even(sz(s)), odd(sz(s));
   for (int i = 0; i < sz(s); i++){
     even[i] = p[2 * i + 1] / 2, odd[i] = p[2 * i + 2] / 2;
   }
@@ -84,7 +84,7 @@ int ctoi(char c){
 
 // To add terminal links, use DFS
 struct Node{
-  vector<int> nxt;
+  vi nxt;
   int link;
   bool terminal;
 
