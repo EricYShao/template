@@ -328,7 +328,7 @@ int go(int v, char c){
 ## Convex Hull Trick
 + Allows to insert a linear function to the hull in Ө(1) and get the minimum/maximum value of the stored function at a point in O(log n).
 + NOTE: The lines must be added in the order of decreasing/increasing gradients. CAREFULLY CHECK THE SETUP BEFORE USING!
-+ IMPORTANT: THE DEFAULT VERSION SURELY WORKS. IF MODIFIED VERSIONS DON'T WORK, TRY TRANSFORMING THEM TO THE DEFAULT ONE BY CHANGING SIGNS.
++ IMPORTANT: DO NOT MODIFY TO QUERY MAX, IT WILL BREAK
 
 ```cpp
 struct line{
@@ -342,12 +342,12 @@ vector<line> hull;
  
 void add_line(line nl){
   if (!hull.empty() && hull.back().k == nl.k){
-    nl.b = min(nl.b, hull.back().b); // Default: minimum. For maximum change "min" to "max".
+    nl.b = min(nl.b, hull.back().b);
     hull.pop_back();
   }
   while (sz(hull) > 1){
     auto& l1 = hull.end()[-2], l2 = hull.back();
-    if ((nl.b - l1.b) * (l2.k - nl.k) >= (nl.b - l2.b) * (l1.k - nl.k)) hull.pop_back(); // Default: decreasing gradient k. For increasing k change the sign to <=.
+    if ((nl.b - l1.b) * (l2.k - nl.k) >= (nl.b - l2.b) * (l1.k - nl.k)) hull.pop_back();
     else break;
   }
   hull.pb(nl);
@@ -357,7 +357,7 @@ ll get(ll x){
   int l = 0, r = sz(hull);
   while (r - l > 1){
     int mid = (l + r) / 2;
-    if (hull[mid - 1].f(x) >= hull[mid].f(x)) l = mid; // Default: minimum. For maximum change the sign to <=.
+    if (hull[mid - 1].f(x) >= hull[mid].f(x)) l = mid;
     else r = mid;
   }
   return hull[l].f(x);
