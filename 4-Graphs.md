@@ -106,6 +106,41 @@ while (!q.empty()){
 }
 ```
 
+## Bellman-Ford Algorithm
++ Finds single-source shortest paths with negative edge weights.
++ Returns the vector of distances to 0-indexed vertices, or empty vector if a negative cycle is reachable from source.
+```cpp
+const ll bf_inf = 1e18;
+
+struct edge {
+    ll a, b, w;
+};
+
+vector<ll> bellman_ford(int n, vector<edge> edges, int src)
+{
+    vector<ll> d(n, bf_inf);
+    d[src] = 0;
+    vector<ll> p(n, -1);
+    int x;
+    for (int i = 0; i < n; ++i) {
+        x = -1;
+        for (edge e : edges)
+            if (d[e.a] < bf_inf)
+                if (d[e.b] > d[e.a] + e.w) {
+                    d[e.b] = max(-bf_inf, d[e.a] + e.w);
+                    p[e.b] = e.a;
+                    x = e.b;
+                }
+    }
+ 
+    if (x != -1){
+      // negative cycle reachable from src
+      return {};
+    }
+    return d;
+}
+```
+
 ## Eulerian Cycle DFS
 
 ```cpp
