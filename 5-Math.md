@@ -143,8 +143,6 @@ void sieve(int n){
 
 ## Mod Class
 + For Gaussian Elimination
-## Mod Class
-
 ```cpp
 constexpr ll norm(ll x) { return (x % MOD + MOD) % MOD; }
 template <typename T>
