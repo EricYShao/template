@@ -141,11 +141,52 @@ void sieve(int n){
 }
 ```
 
+## Mod Class
++ For Gaussian Elimination
+## Mod Class
+
+```cpp
+constexpr ll norm(ll x) { return (x % MOD + MOD) % MOD; }
+template <typename T>
+constexpr T power(T a, ll b, T res = 1) {
+  for (; b; b /= 2, (a *= a) %= MOD)
+    if (b & 1) (res *= a) %= MOD;
+  return res;
+}
+struct Z {
+  ll x;
+  constexpr Z(ll _x = 0) : x(norm(_x)) {}
+  // auto operator<=>(const Z &) const = default; // cpp20 only
+  Z operator-() const { return Z(norm(MOD - x)); }
+  Z inv() const { return power(*this, MOD - 2); }
+  Z &operator*=(const Z &rhs) { return x = x * rhs.x % MOD, *this; }
+  Z &operator+=(const Z &rhs) { return x = norm(x + rhs.x), *this; }
+  Z &operator-=(const Z &rhs) { return x = norm(x - rhs.x), *this; }
+  Z &operator/=(const Z &rhs) { return *this *= rhs.inv(); }
+  Z &operator%=(const ll &rhs) { return x %= rhs, *this; }
+  friend Z operator*(Z lhs, const Z &rhs) { return lhs *= rhs; }
+  friend Z operator+(Z lhs, const Z &rhs) { return lhs += rhs; }
+  friend Z operator-(Z lhs, const Z &rhs) { return lhs -= rhs; }
+  friend Z operator/(Z lhs, const Z &rhs) { return lhs /= rhs; }
+  friend Z operator%(Z lhs, const ll &rhs) { return lhs %= rhs; }
+  friend auto &operator>>(istream &i, Z &z) { return i >> z.x; }
+  friend auto &operator<<(ostream &o, const Z &z) { return o << z.x; }
+};
+```
++ Fastest mod class! be careful with overflow, only use when the time limit is tight
+```cpp
+constexpr int norm(int x) {
+  if (x < 0) x += MOD;
+  if (x >= MOD) x -= MOD;
+  return x;
+}
+```
+
 ## Gaussian Elimination
 
 ```cpp
 bool is_0(Z v) { return v.x == 0; }
-Z abs(Z v) { return v; }
+int abs(Z v) { return v.x; }
 bool is_0(double v) { return abs(v) < 1e-9; }
 
 // 1 => unique solution, 0 => no solution, -1 => multiple solutions
@@ -405,7 +446,11 @@ int partition(int n) {
 ```
 
 ## NTT
-
++ large mod (for NTT to do FFT in ll range without modulo)
+```cpp
+constexpr i128 MOD = 9223372036737335297;
+```
++ Otherwise, use below
 ```cpp
 const int MOD = 998244353;
 void ntt(vll& a, int f) {
