@@ -28,14 +28,14 @@ struct matrix{
   matrix(int n_, ll val){
     n = n_;
     memset(m, 0, sizeof(m));
-    for (int i = 0; i < n; i++) m[i][i] = val;
+    forn(i, n) m[i][i] = val;
   };
 
   matrix operator* (matrix oth){
     matrix res(n);
-    for (int i = 0; i < n; i++){
-      for (int j = 0; j < n; j++){
-        for (int k = 0; k < n; k++){
+    forn(i, n){
+      forn(j, n){
+        forn(k, n){
           res.m[i][j] = (res.m[i][j] + m[i][k] * oth.m[k][j]) % MOD;
         }
       }
@@ -236,12 +236,12 @@ int gaussian_elimination(vector<vector<T>> &a, int limit) {
 template <typename T>
 pair<int,vector<T>> solve_linear(vector<vector<T>> a, const vector<T> &b, int w) {
   int h = (int)a.size();
-  for (int i = 0; i < h; i++) a[i].push_back(b[i]);
+  forn(i, h) a[i].push_back(b[i]);
   int sol = gaussian_elimination(a, w);
   if(!sol) return {0, vector<T>()};
   vector<T> x(w, 0);
-  for (int i = 0; i < h; i++) {
-    for (int j = 0; j < w; j++) {
+  forn(i, h) {
+    forn(j, w) {
       if (!is_0(a[i][j])) {
         x[j] = a[i][w] / a[i][j];
         break;
@@ -398,14 +398,14 @@ the function calc_kth computes $s_k$.
 ```cpp
 vll poly_mult_mod(vll p, vll q, vll& c){
   vll ans(sz(p) + sz(q) - 1);
-  for (int i = 0; i < sz(p); i++){
-    for (int j = 0; j < sz(q); j++){
+  forn(i, sz(p)){
+    forn(j, sz(q)){
       ans[i + j] = (ans[i + j] + p[i] * q[j]) % MOD;
     }
   }
   int n = sz(ans), m = sz(c);
   for (int i = n - 1; i >= m; i--){
-    for (int j = 0; j < m; j++){
+    forn(j, m){
       ans[i - 1 - j] = (ans[i - 1 - j] + c[j] * ans[i]) % MOD;
     }
   }
@@ -421,7 +421,7 @@ ll calc_kth(vll s, vll c, ll k){
     if (k & 1) res = poly_mult_mod(res, poly, c);
   }
   ll ans = 0;
-  for (int i = 0; i < min(sz(res), sz(c)); i++) ans = (ans + s[i] * res[i]) % MOD;
+  forn(i, min(sz(res), sz(c))) ans = (ans + s[i] * res[i]) % MOD;
   return ans;
 }
 ```
@@ -455,8 +455,8 @@ void ntt(vll& a, int f) {
   int n = int(a.size());
   vll w(n);
   vi rev(n);
-  for (int i = 0; i < n; i++) rev[i] = (rev[i / 2] / 2) | ((i & 1) * (n / 2));
-  for (int i = 0; i < n; i++) {
+  forn(i, n) rev[i] = (rev[i / 2] / 2) | ((i & 1) * (n / 2));
+  forn(i, n) {
     if (i < rev[i]) swap(a[i], a[rev[i]]);
   }
   ll wn = power(f ? (MOD + 1) / 3 : 3, (MOD - 1) / n);
@@ -464,7 +464,7 @@ void ntt(vll& a, int f) {
   for (int i = 1; i < n; i++) w[i] = w[i - 1] * wn % MOD;
   for (int mid = 1; mid < n; mid *= 2) {
     for (int i = 0; i < n; i += 2 * mid) {
-      for (int j = 0; j < mid; j++) {
+      forn(j, mid) {
         ll x = a[i + j], y = a[i + j + mid] * w[n / (2 * mid) * j] % MOD;
         a[i + j] = (x + y) % MOD, a[i + j + mid] = (x + MOD - y) % MOD;
       }
@@ -480,7 +480,7 @@ vll mul(vll a, vll b) {
   while (n < m) n *= 2;
   a.resize(n), b.resize(n);
   ntt(a, 0), ntt(b, 0); // if squaring, you can save one NTT here
-  for (int i = 0; i < n; i++) a[i] = a[i] * b[i] % MOD;
+  forn(i, n) a[i] = a[i] * b[i] % MOD;
   ntt(a, 1);
   a.resize(m);
   return a;
@@ -497,11 +497,11 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
   int len = 1 << bit;
   vector<complex<ld>> a(len), b(len);
   vi rev(len);
-  for (int i = 0; i < n; i++) a[i].real(aa[i]);
-  for (int i = 0; i < m; i++) b[i].real(bb[i]);
-  for (int i = 0; i < len; i++) rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (bit - 1));
+  forn(i, n) a[i].real(aa[i]);
+  forn(i, m) b[i].real(bb[i]);
+  forn(i, len) rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (bit - 1));
   auto fft = [&](vector<complex<ld>>& p, int inv) {
-    for (int i = 0; i < len; i++)
+    forn(i, len)
       if (i < rev[i]) swap(p[i], p[rev[i]]);
     for (int mid = 1; mid < len; mid *= 2) {
       auto w1 = complex<ld>(cos(PI / mid), (inv ? -1 : 1) * sin(PI / mid));
@@ -514,15 +514,15 @@ auto mul = [&](const vector<ld>& aa, const vector<ld>& bb) {
       }
     }
     if (inv == 1) {
-      for (int i = 0; i < len; i++) p[i].real(p[i].real() / len);
+      forn(i, len) p[i].real(p[i].real() / len);
     }
   };
   fft(a, 0), fft(b, 0);
-  for (int i = 0; i < len; i++) a[i] = a[i] * b[i];
+  forn(i, len) a[i] = a[i] * b[i];
   fft(a, 1);
   a.resize(n + m - 1);
   vector<ld> res(n + m - 1);
-  for (int i = 0; i < n + m - 1; i++) res[i] = a[i].real();
+  forn(i, n + m - 1) res[i] = a[i].real();
   return res;
 };
 ```
@@ -865,11 +865,11 @@ template <class M1, class M2> struct MatroidIsect {
 	M1 m1; M2 m2;
 	MatroidIsect(M1 m1, M2 m2, int n) : n(n), iset(n + 1), m1(m1), m2(m2) {}
 	vi solve() {
-		for (int i = 0; i < n; i++) if (m1.check(i) && m2.check(i))
+		forn(i, n) if (m1.check(i) && m2.check(i))
 			iset[i] = true, m1.add(i), m2.add(i);
 		while (augment());
 		vi ans;
-		for (int i = 0; i < n; i++) if (iset[i]) ans.push_back(i);
+		forn(i, n) if (iset[i]) ans.push_back(i);
 		return ans;
 	}
 	bool augment() {

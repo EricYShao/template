@@ -147,7 +147,7 @@ struct MCMF {
         }
       }
     }
-    for (int i = 0; i < N; i++) pi[i] = min(pi[i] + dist[i], INF);
+    forn(i, N) pi[i] = min(pi[i] + dist[i], INF);
   }
 
   pair<ll, ll> max_flow(int s, int t) {
@@ -163,7 +163,7 @@ struct MCMF {
         ed[x->to][x->rev].flow -= fl;
       }
     }
-    for (int i = 0; i < N; i++) for(edge& e : ed[i]) totcost += e.cost * e.flow;
+    forn(i, N) for(edge& e : ed[i]) totcost += e.cost * e.flow;
     return {totflow, totcost/2};
   }
 
@@ -172,7 +172,7 @@ struct MCMF {
     fill(all(pi), INF); pi[s] = 0;
     int it = N, ch = 1; ll v;
     while (ch-- && it--)
-      for (int i = 0; i < N; i++) if (pi[i] != INF)
+      forn(i, N) if (pi[i] != INF)
         for (edge& e : ed[i]) if (e.cap)
           if ((v = pi[i] + e.cost) < pi[e.to])
             pi[e.to] = v, ch = 1;

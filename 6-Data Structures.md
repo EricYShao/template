@@ -112,7 +112,7 @@ struct LazySegTree{
   // Change clear() function to t.clear() if using unordered_map for SegTree!!!
   void clear(int n_){
     n = n_;
-    for (int i = 0; i < 4 * n; i++) t[i] = 0, lazy[i] = lazy_mark;
+    forn(i, 4 * n) t[i] = 0, lazy[i] = lazy_mark;
   }
 
   void build(vector<T>& a){
@@ -144,7 +144,7 @@ void build(vector<T>& a){
   for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;
 
   for (int k = 0; k < LOG; k++){
-    for (int i = 0; i < n; i++){
+    forn(i, n){
       if (!k) st[i][k] = a[i];
       else st[i][k] = f(st[i][k - 1], st[min(n - 1, i + (1 << (k - 1)))][k - 1]);
     }
@@ -181,7 +181,7 @@ struct SuffixArray{
   void buildArray(string s){
     int n = sz(s) + 1;
     p.resize(n), c.resize(n);
-    for (int i = 0; i < n; i++) p[i] = i;
+    forn(i, n) p[i] = i;
     sort(all(p), [&] (int a, int b){return s[a] < s[b];});
     c[p[0]] = 0;
     for (int i = 1; i < n; i++){
@@ -190,7 +190,7 @@ struct SuffixArray{
     vi p2(n), c2(n);
     // w is half-length of each string.
     for (int w = 1; w < n; w <<= 1){
-      for (int i = 0; i < n; i++){
+      forn(i, n){
         p2[i] = (p[i] - w + n) % n;
       }
       vi cnt(n);
@@ -215,7 +215,7 @@ struct SuffixArray{
     int n = sz(s);
     h.resize(n - 1);
     int k = 0;
-    for (int i = 0; i < n; i++){
+    forn(i, n){
       if (c[i] == n){
         k = 0;
         continue;
@@ -299,7 +299,7 @@ void add_links(){
     auto v = q.front();
     int u = trie[v].link;
     q.pop();
-    for (int i = 0; i < S; i++){
+    forn(i, S){
       int& ch = trie[v].nxt[i];
       if (ch == -1){
         ch = v? trie[u].nxt[i] : 0;

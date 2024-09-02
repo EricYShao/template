@@ -3,8 +3,8 @@
 + Computes $f[A] = \sum_{B \subseteq A}{a[B]}$.
 + Complexity: $O(2^n \cdot n)$.
 ```cpp
-for (int i = 0; i < (1 << n); i++) f[i] = a[i];
-for (int i = 0; i < n; i++) for (int mask = 0; mask < (1 << n); mask++) if ((mask >> i) & 1){
+forn(i, (1 << n)) f[i] = a[i];
+forn(i, n) for (int mask = 0; mask < (1 << n); mask++) if ((mask >> i) & 1){
   f[mask] += f[mask ^ (1 << i)];
 }
 ```
@@ -51,7 +51,7 @@ int dp[N][N], opt[N][N];
 auto C = [&](int i, int j) {
   // Implement cost function C.
 };
-for (int i = 0; i < N; i++) {
+forn(i, N) {
   opt[i][i] = i;
   // Initialize dp[i][i] according to the problem
 }

@@ -122,7 +122,7 @@ vector<ll> bellman_ford(int n, vector<edge> edges, int src)
     d[src] = 0;
     vector<ll> p(n, -1);
     int x;
-    for (int i = 0; i < n; ++i) {
+    forn(i, n) {
         x = -1;
         for (edge e : edges)
             if (d[e.a] < bf_inf)
@@ -298,7 +298,7 @@ void dfs2(int v, int rt, int c){
   pos[v] = sz(a);
   a.pb(c);
   root[v] = rt;
-  for (int i = 0; i < sz(g[v]); i++){
+  forn(i, sz(g[v])){
     auto [u, c] = g[v][i];
     if (!i) dfs2(u, rt, c);
     else dfs2(u, u, c);

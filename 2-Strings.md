@@ -18,7 +18,7 @@ vi kmp(string s, string k){
   string st = k + "#" + s;
   vi res;
   auto pi = prefix_function(st);
-  for (int i = 0; i < sz(st); i++){
+  forn(i, sz(st)){
     if (pi[i] == sz(k)){
       res.pb(i - 2 * sz(k));
     }
@@ -60,7 +60,7 @@ pair<vi, vi> manacher(string s) {
     if (i + p[i] > r + c) r = p[i], c = i;
   }
   vi even(sz(s)), odd(sz(s));
-  for (int i = 0; i < sz(s); i++){
+  forn(i, sz(s)){
     even[i] = p[2 * i + 1] / 2, odd[i] = p[2 * i + 2] / 2;
   }
   return {even, odd};
@@ -117,7 +117,7 @@ void add_links(){
     auto v = q.front();
     int u = trie[v].link;
     q.pop();
-    for (int i = 0; i < S; i++){
+    forn(i, S){
       int& ch = trie[v].nxt[i];
       if (ch == -1){
         ch = v? trie[u].nxt[i] : 0;
