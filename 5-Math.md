@@ -703,7 +703,9 @@ poly exp(const poly& a) { // MUST have a[0] == 0
     b.resize(n);
   }
   return b;
-} 
+}
+
+// this is bugged
 poly pow(const poly& a, int m) { // m >= 0 
   poly b(a.size());
   if (!m) {
